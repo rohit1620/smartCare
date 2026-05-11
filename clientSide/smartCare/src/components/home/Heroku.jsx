@@ -11,6 +11,7 @@ import {
   BadgeCheck,
   Stethoscope,
 } from "lucide-react";
+import rohitImg from "../../assets/rohit.png";
 
 export default function HospitalHeroSection() {
   const floatingAnimation = {
@@ -23,7 +24,7 @@ export default function HospitalHeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white min-h-screen flex items-center pt-14 pb-20">
+    <section className="relative overflow-hidden bg-white min-h-screen flex items-center pt-14 ">
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f020_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f020_1px,transparent_1px)] bg-[size:70px_70px]"></div>
 
@@ -180,7 +181,7 @@ export default function HospitalHeroSection() {
 
               <div className="relative overflow-hidden rounded-[40px] border border-white/40 bg-white/30 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
                 <img
-                  src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=1200&auto=format&fit=crop"
+                  src={rohitImg}
                   alt="Doctor"
                   className="w-full h-[650px] object-cover transition-transform duration-700 hover:scale-105"
                 />

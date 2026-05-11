@@ -49,7 +49,7 @@ export default function QuickAppointmentSection() {
   };
 
   return (
-    <section className="relative overflow-hidden py-24 bg-white">
+    <section className="relative overflow-hidden pt-20 bg-white">
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f020_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f020_1px,transparent_1px)] bg-[size:70px_70px]"></div>
 

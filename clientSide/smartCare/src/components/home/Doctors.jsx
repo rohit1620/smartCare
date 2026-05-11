@@ -9,9 +9,9 @@ import {
   Video,
   CalendarCheck,
   Phone,
-  //   Facebook,
-  Twitter,
-  //   Linkedin,
+  Globe,
+  Mail,
+  MessageCircle,
   Stethoscope,
   BadgeCheck,
   Users,
@@ -37,42 +37,42 @@ const doctors = [
       "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=1200&auto=format&fit=crop",
     available: true,
   },
-  {
-    name: "Dr. Emily Clark",
-    specialty: "Orthopedic Specialist",
-    experience: "10+ Years",
-    rating: "4.9",
-    image:
-      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=1200&auto=format&fit=crop",
-    available: false,
-  },
-  {
-    name: "Dr. Daniel Smith",
-    specialty: "Pediatrician",
-    experience: "9+ Years",
-    rating: "4.7",
-    image:
-      "https://images.unsplash.com/photo-1582750433449-648ed127bb54?q=80&w=1200&auto=format&fit=crop",
-    available: true,
-  },
-  {
-    name: "Dr. Olivia Martin",
-    specialty: "Dentist",
-    experience: "11+ Years",
-    rating: "4.8",
-    image:
-      "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?q=80&w=1200&auto=format&fit=crop",
-    available: true,
-  },
-  {
-    name: "Dr. James Wilson",
-    specialty: "Dermatologist",
-    experience: "14+ Years",
-    rating: "4.9",
-    image:
-      "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1200&auto=format&fit=crop",
-    available: false,
-  },
+  // {
+  //   name: "Dr. Emily Clark",
+  //   specialty: "Orthopedic Specialist",
+  //   experience: "10+ Years",
+  //   rating: "4.9",
+  //   image:
+  //     "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=1200&auto=format&fit=crop",
+  //   available: false,
+  // },
+  // {
+  //   name: "Dr. Daniel Smith",
+  //   specialty: "Pediatrician",
+  //   experience: "9+ Years",
+  //   rating: "4.7",
+  //   image:
+  //     "https://images.unsplash.com/photo-1582750433449-648ed127bb54?q=80&w=1200&auto=format&fit=crop",
+  //   available: true,
+  // },
+  // {
+  //   name: "Dr. Olivia Martin",
+  //   specialty: "Dentist",
+  //   experience: "11+ Years",
+  //   rating: "4.8",
+  //   image:
+  //     "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?q=80&w=1200&auto=format&fit=crop",
+  //   available: true,
+  // },
+  // {
+  //   name: "Dr. James Wilson",
+  //   specialty: "Dermatologist",
+  //   experience: "14+ Years",
+  //   rating: "4.9",
+  //   image:
+  //     "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1200&auto=format&fit=crop",
+  //   available: false,
+  // },
 ];
 
 const stats = [
@@ -96,7 +96,7 @@ const stats = [
 
 export default function MeetOurDoctors() {
   return (
-    <section className="relative overflow-hidden py-28 bg-white">
+    <section className="relative overflow-hidden py-12 bg-white">
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f015_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f015_1px,transparent_1px)] bg-[size:70px_70px]" />
 
@@ -174,7 +174,7 @@ export default function MeetOurDoctors() {
         </motion.div>
 
         {/* ================= STATS ================= */}
-        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-20">
+        {/* <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-20">
           {stats.map((item, index) => (
             <motion.div
               key={index}
@@ -201,7 +201,7 @@ export default function MeetOurDoctors() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </div> */}
 
         {/* ================= MAIN AREA ================= */}
         <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-12 mt-28">
@@ -306,7 +306,7 @@ export default function MeetOurDoctors() {
 
                   {/* Social */}
                   <div className="mt-6 flex items-center gap-3">
-                    {[Facebook, Twitter, Linkedin].map((Icon, idx) => (
+                    {[Globe, Mail, MessageCircle].map((Icon, idx) => (
                       <button
                         key={idx}
                         className="w-11 h-11 rounded-2xl bg-slate-100 hover:bg-gradient-to-r hover:from-[#0F766E] hover:to-[#06B6D4] text-slate-600 hover:text-white transition-all duration-300 flex items-center justify-center"

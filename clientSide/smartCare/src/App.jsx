@@ -1,6 +1,8 @@
 import React from "react";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import AllPages from "./pages/AllPages";
+import ScrollToTop from "./components/other/ScrollToTop";
 
 // import HospitalNavbar from "./components/Navbar1";
 
@@ -9,8 +11,9 @@ const App = () => {
     <div>
       <Navbar />
       {/* <HospitalNavbar /> */}
-      <Home />
-      <h1>This is app component</h1>
+      {/* <Home /> */}
+      <ScrollToTop />
+      <AllPages />
     </div>
   );
 };

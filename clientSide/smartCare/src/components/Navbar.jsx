@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Menu,
   X,
@@ -68,23 +69,28 @@ export default function HospitalNavbar() {
             {/* DESKTOP NAV */}
             <div className="hidden lg:flex items-center gap-8 lg:pr-5">
               {navLinks.map((link) => (
-                <button
+                <Link
+                  to={link == "Home" ? "/" : `/${link.toLowerCase()}`}
                   key={link}
-                  onClick={() => setActive(link)}
-                  className={`relative text-sm lg:cursor-pointer font-semibold tracking-wide transition-all duration-300 ${
-                    active === link
-                      ? "text-teal-700"
-                      : "text-slate-600 hover:text-teal-600"
-                  }`}
                 >
-                  {link}
-
-                  <span
-                    className={`absolute left-0 -bottom-2 h-[2.5px] rounded-full bg-gradient-to-r from-teal-600 to-cyan-400 transition-all duration-500 ${
-                      active === link ? "w-full" : "w-0 group-hover:w-full"
+                  <button
+                    key={link}
+                    onClick={() => setActive(link)}
+                    className={`relative text-sm lg:cursor-pointer font-semibold tracking-wide transition-all duration-300 ${
+                      active === link
+                        ? "text-teal-700"
+                        : "text-slate-600 hover:text-teal-600"
                     }`}
-                  ></span>
-                </button>
+                  >
+                    {link}
+
+                    <span
+                      className={`absolute left-0 -bottom-2 h-[2.5px] rounded-full bg-gradient-to-r from-teal-600 to-cyan-400 transition-all duration-500 ${
+                        active === link ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    ></span>
+                  </button>
+                </Link>
               ))}
             </div>
 

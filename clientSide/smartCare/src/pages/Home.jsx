@@ -12,9 +12,9 @@ const Home = () => {
       <Heroku />
       <Quick />
       <TrustedPartnersSection />
+      <MeetOurDoctors />
       <Services />
       <WhyChooseUsSection />
-      <MeetOurDoctors />
     </div>
   );
 };

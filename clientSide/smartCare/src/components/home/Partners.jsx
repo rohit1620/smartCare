@@ -40,16 +40,6 @@ const certifications = [
     title: "ISO Certified",
     desc: "Certified hospital systems ensuring operational excellence.",
   },
-  {
-    icon: Lock,
-    title: "HIPAA Compliant",
-    desc: "Advanced patient data security and privacy protection standards.",
-  },
-  {
-    icon: HeartPulse,
-    title: "24/7 Emergency",
-    desc: "Round-the-clock emergency healthcare and ambulance support.",
-  },
 ];
 
 export default function TrustedPartnersSection() {
@@ -68,7 +58,7 @@ export default function TrustedPartnersSection() {
   };
 
   return (
-    <section className="relative overflow-hidden py-28 bg-white">
+    <section className="relative overflow-hidden pt-12 bg-white">
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f020_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f020_1px,transparent_1px)] bg-[size:70px_70px]" />
 
@@ -140,7 +130,7 @@ export default function TrustedPartnersSection() {
 
           {/* Counter */}
           <div className="mt-10 flex items-center justify-center gap-4">
-            <div className="relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_15px_40px_rgba(0,0,0,0.06)]">
+            <div className="relative flex items-center gap-3 px-6 py-1 rounded-2xl bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_15px_40px_rgba(0,0,0,0.06)]">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-30"></div>
 
@@ -155,7 +145,7 @@ export default function TrustedPartnersSection() {
         </motion.div>
 
         {/* ================= PARTNERS MARQUEE ================= */}
-        <div className="relative mt-20 overflow-hidden">
+        <div className="relative mt-10 overflow-hidden">
           <motion.div
             animate={{
               x: ["0%", "-50%"],
@@ -201,7 +191,7 @@ export default function TrustedPartnersSection() {
         </div>
 
         {/* ================= CERTIFICATIONS ================= */}
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 mt-24">
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 mt-10">
           {certifications.map((item, index) => (
             <motion.div
               key={index}
@@ -282,7 +272,7 @@ export default function TrustedPartnersSection() {
         </div>
 
         {/* ================= TRUST BADGES ================= */}
-        <div className="grid md:grid-cols-3 gap-6 mt-24">
+        {/* <div className="grid md:grid-cols-3 gap-6 mt-24">
           {[
             {
               icon: ShieldCheck,
@@ -335,7 +325,7 @@ export default function TrustedPartnersSection() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );
