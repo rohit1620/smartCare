@@ -114,7 +114,7 @@ export default function HospitalHeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9, duration: 1 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-14"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-14 hidden lg:inline-grid"
             >
               {[
                 {

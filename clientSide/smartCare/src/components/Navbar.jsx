@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Menu,
   X,
@@ -14,16 +14,19 @@ const navLinks = [
   "Home",
   "About",
   "Doctors",
-  "Departments",
+
   "Appointments",
   "Services",
   "Contact",
+  "Login",
 ];
 
 export default function HospitalNavbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [active, setActive] = useState("Home");
+  // const [active, setActive] = useState("Home");
   const [scrolled, setScrolled] = useState(false);
+
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +37,8 @@ export default function HospitalNavbar() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const isActive = location.pathname;
 
   return (
     <>
@@ -68,30 +73,32 @@ export default function HospitalNavbar() {
 
             {/* DESKTOP NAV */}
             <div className="hidden lg:flex items-center gap-8 lg:pr-5">
-              {navLinks.map((link) => (
-                <Link
-                  to={link == "Home" ? "/" : `/${link.toLowerCase()}`}
-                  key={link}
-                >
-                  <button
-                    key={link}
-                    onClick={() => setActive(link)}
-                    className={`relative text-sm lg:cursor-pointer font-semibold tracking-wide transition-all duration-300 ${
-                      active === link
-                        ? "text-teal-700"
-                        : "text-slate-600 hover:text-teal-600"
-                    }`}
-                  >
-                    {link}
+              {navLinks.map((link) => {
+                const path = link === "Home" ? "/" : `/${link.toLowerCase()}`;
 
-                    <span
-                      className={`absolute left-0 -bottom-2 h-[2.5px] rounded-full bg-gradient-to-r from-teal-600 to-cyan-400 transition-all duration-500 ${
-                        active === link ? "w-full" : "w-0 group-hover:w-full"
+                const isActive = location.pathname === path;
+                return (
+                  <Link to={path} key={link}>
+                    <button
+                      key={link}
+                      onClick={() => setActive(link)}
+                      className={`relative text-sm  lg:cursor-pointer font-semibold tracking-wide transition-all duration-300 ${
+                        isActive
+                          ? "text-teal-700"
+                          : "text-slate-600 hover:text-teal-600"
                       }`}
-                    ></span>
-                  </button>
-                </Link>
-              ))}
+                    >
+                      {link}
+
+                      <span
+                        className={`absolute left-0 -bottom-2 h-[2.5px] rounded-full bg-gradient-to-r from-teal-600 to-cyan-400 transition-all duration-500 ${
+                          isActive ? "w-full" : "w-0 group-hover:w-full"
+                        }`}
+                      ></span>
+                    </button>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* RIGHT ACTIONS */}
@@ -171,33 +178,41 @@ export default function HospitalNavbar() {
           <div className="pt-28 px-6 pb-10 flex flex-col h-full">
             {/* LINKS */}
             <div className="flex flex-col gap-3">
-              {navLinks.map((link, index) => (
-                <button
-                  key={link}
-                  onClick={() => {
-                    setActive(link);
-                    setIsOpen(false);
-                  }}
-                  className={`group flex items-center justify-between px-5 py-5 rounded-2xl text-left font-semibold text-lg transition-all duration-500 ${
-                    active === link
-                      ? "bg-gradient-to-r from-teal-700 to-cyan-500 text-white shadow-xl"
-                      : "bg-white/80 text-slate-700 hover:bg-white hover:shadow-lg"
-                  }`}
-                  style={{
-                    transitionDelay: `${index * 70}ms`,
-                  }}
-                >
-                  <span>{link}</span>
+              {navLinks.map((link, index) => {
+                const path = link === "Home" ? "/" : `/${link.toLowerCase()}`;
 
-                  <ChevronRight
-                    className={`w-5 h-5 transition-transform duration-300 ${
-                      active === link
-                        ? "translate-x-1"
-                        : "group-hover:translate-x-1"
-                    }`}
-                  />
-                </button>
-              ))}
+                const isActive = location.pathname === path;
+                return (
+                  <Link to={path} key={link}>
+                    <button
+                      key={link}
+                      onClick={() => {
+                        setIsOpen(false);
+                      }}
+                      className={`group flex items-center justify-between px-5 py-5 rounded-2xl text-left font-semibold text-lg transition-all duration-500
+                     ${
+                       isActive
+                         ? "bg-gradient-to-r from-teal-700 to-cyan-500 text-white shadow-xl"
+                         : "bg-white/80 text-slate-700 hover:bg-white hover:shadow-lg"
+                     }
+                  `}
+                      style={{
+                        transitionDelay: `${index * 70}ms`,
+                      }}
+                    >
+                      <span>{link}</span>
+
+                      <ChevronRight
+                        className={`w-5 h-5 transition-transform duration-300 ${
+                          isActive
+                            ? "translate-x-1"
+                            : "group-hover:translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* ACTIONS */}

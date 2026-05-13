@@ -151,7 +151,7 @@ export default function QuickAppointmentSection() {
             {/* Stats */}
             <motion.div
               variants={fadeUp}
-              className="grid sm:grid-cols-3 gap-5 mt-12"
+              className="grid sm:grid-cols-3 gap-5 mt-12 hidden lg:inline-grid"
             >
               {[
                 {
