@@ -46,7 +46,7 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered",
-      token,
+    
       user,
     });
   } catch (error) {
@@ -138,8 +138,12 @@ export const getMyProfile = async (
   res
 ) => {
   try {
+
+const id="6a0563c2ef3d61a5d5dc32f9";
+
     const user = await User.findById(
-      req.user.id
+      // req.user.id
+      id
     ).select("-password");
 
     res.status(200).json({
