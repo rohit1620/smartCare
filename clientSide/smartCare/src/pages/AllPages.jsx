@@ -6,6 +6,8 @@ import ContactPage from "./ContactPage";
 import DoctorPage from "./DoctorPage";
 import ServicesPage from "./ServicesPage";
 import Auth from "./Auth";
+import HospitalUserDashboard from "../dashbord/user/HospitalUserDashboard";
+import ReceptionDashboard from "../dashbord/receptions/ReceptionDashboard";
 
 const AllPages = () => {
   return (
@@ -17,6 +19,8 @@ const AllPages = () => {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/doctors" element={<DoctorPage />} />
         <Route path="/services" element={<ServicesPage />} />
+        <Route path="/dashboard/user" element={<HospitalUserDashboard />} />
+        <Route path="/dashboard/reception" element={<ReceptionDashboard />} />
       </Routes>
     </>
   );

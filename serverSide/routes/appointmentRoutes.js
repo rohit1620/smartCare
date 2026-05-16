@@ -31,7 +31,7 @@ router.get(
 );
 
 router.get(
-  "/:id",
+  "all/:id",
 //   verifyToken,
   getSingleAppointment
 );

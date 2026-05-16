@@ -157,7 +157,7 @@ export const getSingleAppointment =
         return res.status(400).json({
           success: false,
           message:
-            "Invalid appointment ID",
+            "Invalid appointment ID galat",
         });
       }
 
@@ -229,7 +229,7 @@ export const cancelAppointment =
         return res.status(400).json({
           success: false,
           message:
-            "Invalid appointment ID",
+            "Invalid appointment ID ",
         });
       }
 
@@ -318,14 +318,14 @@ export const getAllAppointments =
     try {
 
       // admin check
-      if (
-        req.user.role !== "admin"
-      ) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied",
-        });
-      }
+      // if (
+      //   req.user.role !== "admin"
+      // ) {
+      //   return res.status(403).json({
+      //     success: false,
+      //     message: "Access denied",
+      //   });
+      // }
 
       // pagination
       const page =
