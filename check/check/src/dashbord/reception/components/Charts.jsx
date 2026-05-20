@@ -8,9 +8,16 @@ import {
   XAxis,
   LineChart,
   Line,
+  Cell,
 } from "recharts";
 
 const Charts = ({ departmentData, statusData, weeklyData }) => {
+  const COLORS = {
+    pending: "#eab308",
+    confirm: "#00FF00",
+    completed: "#06b6d4",
+    cancelled: "#f43f5e",
+  };
   return (
     <div className="grid lg:grid-cols-3 gap-6">
       <div className="bg-white/10 rounded-3xl p-5">
@@ -37,7 +44,11 @@ const Charts = ({ departmentData, statusData, weeklyData }) => {
               dataKey="count"
               nameKey="status"
               outerRadius={90}
-            />
+            >
+              {statusData.map((entry, index) => (
+                <Cell key={index} fill={COLORS[entry.status]} />
+              ))}
+            </Pie>
 
             <Tooltip />
           </PieChart>

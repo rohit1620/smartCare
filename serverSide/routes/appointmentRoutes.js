@@ -7,60 +7,65 @@ import {
   cancelAppointment,
   getAllAppointments,
   updateAppointmentStatus,
+  getDashboardStats,
 } from "../controllers/appointmentController.js";
 
-// import {
-//   verifyToken
+import {
+  verifyToken
  
-// } from "../middleware/authMiddleware.js";
+} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post(
   "/book",
-//   verifyToken,
-//   authorizeRoles("user"),
+  verifyToken,
+  authorizeRoles("user"),
   bookAppointment
 );
 
 router.get(
   "/my-appointments",
-//   verifyToken,
-//   authorizeRoles("user"),
+  verifyToken,
+  authorizeRoles("user"),
   getMyAppointments
 );
 
 router.get(
   "all/:id",
-//   verifyToken,
+  verifyToken,
   getSingleAppointment
 );
 
 router.put(
   "/cancel/:id",
-//   verifyToken,
-//   authorizeRoles("user"),
+  verifyToken,
+  authorizeRoles("user"),
   cancelAppointment
 );
 
 router.get(
   "/all",
-//   verifyToken,
-//   authorizeRoles(
-//     "admin",
-//     "receptionist"
-//   ),
+  verifyToken,
+  authorizeRoles(
+    "admin",
+    "receptionist"
+  ),
   getAllAppointments
 );
 
 router.put(
   "/status/:id",
-//   verifyToken,
-//   authorizeRoles(
-//     "admin",
-//     "receptionist"
-//   ),
+  verifyToken,
+  authorizeRoles(
+    "admin",
+    "receptionist"
+  ),
   updateAppointmentStatus
 );
 
+router.get(
+  "/stats",
+  getDashboardStats
+);
 export default router;

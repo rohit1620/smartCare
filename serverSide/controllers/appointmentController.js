@@ -515,3 +515,195 @@ export const updateAppointmentStatus =
       });
     }
   };
+
+
+
+
+  // import Appointment from "../models/Appointment.js";
+
+export const getDashboardStats =
+  async (req, res) => {
+    try {
+      // TOTAL
+      const totalAppointments =
+        await Appointment.countDocuments();
+
+      // PENDING
+      const pendingAppointments =
+        await Appointment.countDocuments({
+          status: "pending",
+        });
+
+      // CONFIRMED
+      const confirmedAppointments =
+        await Appointment.countDocuments({
+          status: "confirmed",
+        });
+
+      // COMPLETED
+      const completedAppointments =
+        await Appointment.countDocuments({
+          status: "completed",
+        });
+
+      // CANCELLED
+      const cancelledAppointments =
+        await Appointment.countDocuments({
+          status: "cancelled",
+        });
+
+      // PAID
+      const paidPayments =
+        await Appointment.countDocuments({
+          paymentStatus: "paid",
+        });
+
+      // PENDING PAYMENT
+      const pendingPayments =
+        await Appointment.countDocuments({
+          paymentStatus: "pending",
+        });
+
+      // TODAY APPOINTMENTS
+      const today = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      const todayAppointments =
+        await Appointment.countDocuments({
+          appointmentDate: today,
+        });
+
+      // DEPARTMENT CHART
+      const departmentStats =
+        await Appointment.aggregate([
+          {
+            $group: {
+              _id: "$department",
+
+              count: {
+                $sum: 1,
+              },
+            },
+          },
+
+          {
+            $project: {
+              _id: 0,
+
+              department: "$_id",
+
+              count: 1,
+            },
+          },
+        ]);
+
+      // STATUS CHART
+      const statusStats =
+        await Appointment.aggregate([
+          {
+            $group: {
+              _id: "$status",
+
+              count: {
+                $sum: 1,
+              },
+            },
+          },
+
+          {
+            $project: {
+              _id: 0,
+
+              status: "$_id",
+
+              count: 1,
+            },
+          },
+        ]);
+
+      // WEEKLY CHART
+      const weeklyRaw =
+        await Appointment.aggregate([
+          {
+            $group: {
+              _id: {
+                $dayOfWeek:
+                  "$createdAt",
+              },
+
+              appointments: {
+                $sum: 1,
+              },
+            },
+          },
+        ]);
+
+      const days = [
+        "",
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+      ];
+
+      const weeklyStats =
+        weeklyRaw.map((item) => ({
+          day: days[item._id],
+
+          appointments:
+            item.appointments,
+        }));
+
+      // RECENT APPOINTMENTS
+      const recentAppointments =
+        await Appointment.find()
+          .populate(
+            "patient",
+            "name"
+          )
+          .sort({
+            createdAt: -1,
+          })
+          .limit(5);
+
+      // FINAL RESPONSE
+      res.status(200).json({
+        totalAppointments,
+
+        pendingAppointments,
+
+        confirmedAppointments,
+
+        completedAppointments,
+
+        cancelledAppointments,
+
+        paidPayments,
+
+        pendingPayments,
+
+        todayAppointments,
+
+        departmentStats,
+
+        statusStats,
+
+        weeklyStats,
+
+        recentAppointments,
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        success: false,
+
+        message:
+          "Failed to fetch dashboard stats",
+      });
+    }
+  };

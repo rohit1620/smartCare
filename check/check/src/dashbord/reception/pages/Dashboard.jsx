@@ -10,14 +10,16 @@ import { getDashboardStats } from "../services/appointmentService";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
-
+  console.log("suruhat mere bahi");
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const data = await getDashboardStats();
-
+        console.log("statsdata", data.totalAppointments);
         setStats(data);
+        console.log("statsdata", data);
       } catch (error) {
+        console.log("start");
         console.log(error);
       }
     };
