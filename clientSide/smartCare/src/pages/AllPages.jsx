@@ -6,8 +6,11 @@ import ContactPage from "./ContactPage";
 import DoctorPage from "./DoctorPage";
 import ServicesPage from "./ServicesPage";
 import Auth from "./Auth";
-import HospitalUserDashboard from "../dashbord/user/HospitalUserDashboard";
-import ReceptionDashboard from "../dashbord/receptions/ReceptionDashboard";
+// import HospitalUserDashboard from "../dashbord/HospitalUserDashboard";
+import ReceptionDashboard from "../dashbord/ReceptionDashboard";
+import DoctorDashboard from "../dashbord/DoctorDashboard";
+import UserDashboard from "../dashbord/UserDashboard";
+import MedicalDashboard from "../dashbord/MedicalDashboard";
 
 const AllPages = () => {
   return (
@@ -19,8 +22,11 @@ const AllPages = () => {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/doctors" element={<DoctorPage />} />
         <Route path="/services" element={<ServicesPage />} />
-        <Route path="/dashboard/user" element={<HospitalUserDashboard />} />
+        {/* <Route path="/dashboard/user" element={<HospitalUserDashboard />} /> */}
         <Route path="/dashboard/reception" element={<ReceptionDashboard />} />
+        <Route path="/dashboard/doctor" element={<DoctorDashboard />} />
+        <Route path="/dashboard/user" element={<UserDashboard />} />
+        <Route path="/dashboard/medical" element={<MedicalDashboard />} />
       </Routes>
     </>
   );

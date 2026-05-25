@@ -46,11 +46,11 @@ router.put(
 
 router.get(
   "/all",
-  verifyToken,
-  authorizeRoles(
-    "admin",
-    "receptionist"
-  ),
+  // verifyToken,
+  // authorizeRoles(
+  //   "admin",
+  //   "receptionist"
+  // ),
   getAllAppointments
 );
 

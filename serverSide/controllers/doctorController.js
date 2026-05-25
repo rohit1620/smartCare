@@ -3,13 +3,8 @@ import mongoose from "mongoose";
 import Appointment from "../models/Appointment.js";
 
 // ======================================================
-
 // Function: createDoctor
 // ======================================================
-
-
-
-
 // @desc    Create New Doctor
 // @route   POST /api/doctors
 // @access  Admin / Reception
@@ -103,9 +98,6 @@ export const createDoctor = async (req, res) => {
 // ======================================================
 // Function: getAllDoctors
 // ======================================================
-
-
-
 // @desc    Get All Doctors
 // @route   GET /api/doctors
 // @access  Admin / Reception / User
@@ -218,11 +210,6 @@ export const getAllDoctors = async (req, res) => {
 // ======================================================
 // Function: getSingleDoctor
 // ======================================================
-
-
-
-
-
 // @desc    Get Single Doctor
 // @route   GET /api/doctors/:id
 // @access  Admin / Reception / User
@@ -285,12 +272,8 @@ export const getSingleDoctor = async (req, res) => {
 
 
 // ======================================================
-
 // Function: updateDoctor
 // ======================================================
-
-
-
 // @desc    Update Doctor
 // @route   PUT /api/doctors/:id
 // @access  Admin / Reception
@@ -410,13 +393,8 @@ export const updateDoctor = async (req, res) => {
 
 
 // ======================================================
-
 // Function: deleteDoctor
 // ======================================================
-
-
-
-
 // @desc    Delete Doctor
 // @route   DELETE /api/doctors/:id
 // @access  Admin
@@ -483,15 +461,8 @@ export const deleteDoctor = async (req, res) => {
 
 
 // ======================================================
-
 // Function: getDoctorPatients
 // ======================================================
-
-
-
-
-
-
 // @desc    Get All Patients Of Specific Doctor
 // @route   GET /api/doctors/:id/patients
 // @access  Doctor / Admin
@@ -647,12 +618,8 @@ export const getDoctorPatients = async (req, res) => {
 
 
 // ======================================================
-
 // Function: getDoctorAppointments
 // ======================================================
-
-
-
 // @desc    Get Doctor Appointments
 // @route   GET /api/doctors/:id/appointments
 // @access  Doctor / Admin
@@ -831,13 +798,8 @@ export const getDoctorAppointments = async (req, res) => {
 
 
 // ======================================================
-
 // Function: updateDoctorAvailability
 // ======================================================
-
-
-
-
 // @desc    Update Doctor Availability
 // @route   PATCH /api/doctors/:id/availability
 // @access  Doctor / Admin
