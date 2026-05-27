@@ -6,7 +6,9 @@ export const bookAppointment =
     try {
 
       const {
-        patient,
+       patientName,
+       patientEmail,
+       patientPhone,
         department,
         symptoms,
         appointmentDate,
@@ -16,9 +18,10 @@ export const bookAppointment =
       // validation
       if (
         !department ||
-        !symptoms ||
-        !appointmentDate ||
-        !timeSlot
+        // !symptoms ||
+        !appointmentDate 
+        // ||
+        // !timeSlot
       ) {
         return res.status(400).json({
           success: false,
@@ -62,7 +65,9 @@ export const bookAppointment =
       // create appointment
       const appointment =
         await Appointment.create({
-          patient,
+          patientName,
+       patientEmail,
+       patientPhone,
           //  req.user.id,
           department,
           symptoms,
@@ -373,6 +378,56 @@ export const getAllAppointments =
           filter
         );
 
+        // yaha se
+ // ======================================================
+    // Date Setup
+    // ======================================================
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // ======================================================
+    // Dashboard Statistics
+    // ======================================================
+
+    // const totalAppointments = await Appointment.countDocuments();
+
+    const todayAppointments = await Appointment.countDocuments({
+      appointmentDate: {
+        $gte: todayStart,
+        $lte: todayEnd,
+      },
+    });
+
+    const pendingAppointments = await Appointment.countDocuments({
+      status: "pending",
+    });
+
+    const confirmedAppointments = await Appointment.countDocuments({
+      status: "confirmed",
+    });
+
+    const completedAppointments = await Appointment.countDocuments({
+      status: "completed",
+    });
+
+    const cancelledAppointments = await Appointment.countDocuments({
+      status: "cancelled",
+    });
+
+    // const totalDoctors = await Doctor.countDocuments({
+    //   status: "active",
+    // });
+
+    // const totalPatients = await User.countDocuments({
+    //   role: "user",
+    // });
+
+        // yaha tak
+
       // response
       res.status(200).json({
         success: true,
@@ -384,6 +439,11 @@ export const getAllAppointments =
         ),
 
         totalAppointments,
+        todayAppointments,
+        pendingAppointments,
+        confirmedAppointments,
+        completedAppointments,
+        cancelledAppointments,
 
         appointments,
       });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   CalendarDays,
@@ -14,8 +14,68 @@ import {
   Stethoscope,
   Sparkles,
 } from "lucide-react";
+import { bookAppointment } from "../../services/receptionService";
 
 export default function QuickAppointmentSection() {
+  const [formData, setFormData] = useState({
+    patientName: "",
+    patientEmail: "",
+    patientPhone: "",
+    department: "",
+    assignedDoctorName: "",
+    appointmentDate: "",
+    timeSlot: "",
+    symptoms: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  // ======================================================
+  // Handle Change
+  // ======================================================
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // ======================================================
+  // Handle Submit
+  // ======================================================
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      console.log("form data:", formData);
+
+      const response = await bookAppointment(formData);
+
+      alert(response.message);
+
+      // Reset Form
+      setFormData({
+        patientName: "",
+        patientEmail: "",
+        patientPhone: "",
+        department: "",
+        assignedDoctorName: "",
+        appointmentDate: "",
+        timeSlot: "",
+        symptoms: "",
+      });
+    } catch (error) {
+      console.log(error);
+
+      alert(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const floatingAnimation = {
     y: [0, -12, 0],
     transition: {
@@ -47,6 +107,31 @@ export default function QuickAppointmentSection() {
       },
     },
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <svg
+          className="animate-spin h-10 w-10 text-teal-500"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          ></path>
+        </svg>
+      </div>
+    );
+  }
 
   return (
     <section className="relative overflow-hidden pt-20 bg-white">
@@ -286,12 +371,15 @@ export default function QuickAppointmentSection() {
                 </div>
 
                 {/* Form */}
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   {/* Row 1 */}
                   <div className="grid md:grid-cols-2 gap-5">
                     <div className="relative">
                       <input
                         type="text"
+                        name="patientName"
+                        value={formData.patientName}
+                        onChange={handleChange}
                         placeholder="Full Name"
                         className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
                       />
@@ -300,6 +388,9 @@ export default function QuickAppointmentSection() {
                     <div className="relative">
                       <input
                         type="tel"
+                        name="patientPhone"
+                        value={formData.patientPhone}
+                        onChange={handleChange}
                         placeholder="Phone Number"
                         className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
                       />
@@ -311,18 +402,26 @@ export default function QuickAppointmentSection() {
                     <div className="relative">
                       <input
                         type="email"
+                        name="patientEmail"
+                        value={formData.patientEmail}
+                        onChange={handleChange}
                         placeholder="Email Address"
                         className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
                       />
                     </div>
 
                     <div className="relative">
-                      <select className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-600">
+                      <select
+                        className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-600"
+                        name="department"
+                        value={formData.department}
+                        onChange={handleChange}
+                      >
                         <option>Select Department</option>
-                        <option>Cardiology</option>
-                        <option>Neurology</option>
-                        <option>Orthopedics</option>
-                        <option>Dental Care</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Dental Care">Dental Care</option>
                       </select>
                     </div>
                   </div>
@@ -330,22 +429,41 @@ export default function QuickAppointmentSection() {
                   {/* Row 3 */}
                   <div className="grid md:grid-cols-2 gap-5">
                     <div className="relative">
-                      <select className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-600">
+                      <select
+                        className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-600"
+                        name="assignedDoctorName"
+                        value={formData.assignedDoctorName}
+                        onChange={handleChange}
+                      >
                         <option>Select Doctor</option>
-                        <option>Dr. Sharma</option>
-                        <option>Dr. Patel</option>
-                        <option>Dr. Verma</option>
+                        <option value="Dr. Michael Lee (Neurologist)">
+                          Dr. Michael Lee (Neurologist)
+                        </option>
+                        <option value="Dr. Sarah Johnson (Cardiologist)">
+                          Dr. Sarah Johnson (Cardiologist)
+                        </option>
+                        <option value="Dr. David Miller (Orthopedic)">
+                          Dr. David Miller (Orthopedic)
+                        </option>
                       </select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-5">
                       <input
                         type="date"
+                        name="appointmentDate"
+                        value={formData.appointmentDate}
+                        onChange={handleChange}
                         className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-4 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
                       />
 
                       <div className="relative">
-                        <select className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-4 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-600">
+                        <select
+                          className="w-full h-14 rounded-2xl border border-slate-200 bg-white/80 px-4 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-600"
+                          name="timeSlot"
+                          value={formData.timeSlot}
+                          onChange={handleChange}
+                        >
                           <option>Time</option>
                           <option>09:00 AM</option>
                           <option>11:00 AM</option>
@@ -361,6 +479,9 @@ export default function QuickAppointmentSection() {
                       rows="5"
                       placeholder="Describe Symptoms / Message"
                       className="w-full rounded-3xl border border-slate-200 bg-white/80 px-5 py-4 outline-none resize-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
+                      name="symptoms"
+                      value={formData.symptoms}
+                      onChange={handleChange}
                     ></textarea>
                   </div>
 

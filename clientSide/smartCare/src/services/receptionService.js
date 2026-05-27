@@ -92,3 +92,19 @@ export const toggleVisited = async (
     `/appointments/${id}/visited`
   );
 };
+
+
+// import api from "../api/axios";
+
+// ===============================================
+// Book Appointment
+// ===============================================
+
+export const bookAppointment = async (appointmentData) => {
+  const response = await API.post(
+    "/appointments/book",
+    appointmentData
+  );
+
+  return response.data;
+};

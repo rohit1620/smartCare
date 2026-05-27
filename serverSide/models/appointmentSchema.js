@@ -3,9 +3,21 @@ import mongoose from "mongoose";
 const appointmentSchema =
   new mongoose.Schema(
     {
-      patient: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+      // patient: {
+      //   type: mongoose.Schema.Types.ObjectId,
+      //   ref: "User",
+      //   required: true,
+      // },
+      patientName: {
+        type: String,
+        required: true,
+      },
+      patientEmail: {
+        type: String,
+        required: true,
+      },
+      patientPhone: {
+        type: String,
         required: true,
       },
 
@@ -40,10 +52,13 @@ const appointmentSchema =
         default: "pending",
       },
 
-      assignedDoctor: {
-        type:
-          mongoose.Schema.Types.ObjectId,
-        ref: "User",
+      // assignedDoctor: {
+      //   type:
+      //     mongoose.Schema.Types.ObjectId,
+      //   ref: "User",
+      // },
+      assignedDoctorName: {
+        type: String,
       },
 
       paymentStatus: {
