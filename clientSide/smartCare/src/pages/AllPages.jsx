@@ -27,6 +27,7 @@ const AllPages = () => {
         <Route path="/dashboard/doctor" element={<DoctorDashboard />} />
         <Route path="/dashboard/user" element={<UserDashboard />} />
         <Route path="/dashboard/medical" element={<MedicalDashboard />} />
+        <Route path="/auth" element={<Auth />} />
       </Routes>
     </>
   );
