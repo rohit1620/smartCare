@@ -37,44 +37,8 @@ export default function ReceptionDashboard() {
   // Theme & Layout States
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  // useEffect(() => {
-  //   const fetchDashboard = async () => {
-  //     try {
-  //       const data = await getReceptionDashboard(receptionId);
-
-  //       setDashboard(data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchDashboard();
-  // }, []);
-
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const data = await getAppointments();
-
-        // setAppointments(data);
-        console.log("full appointments data: ", data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchAppointments();
-  }, []);
-
-  // Backend Query/Filter States (Directly connects to your API controllers)
-  const [searchFilter, setSearchFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all"); // all, pending, confirmed, completed, cancelled
-
-  // Backend Data Mock State
-  const [dashboardData, setDashboardData] = useState({
+  // const [data, setData] = useState(null);
+  const [dashboardData, setDashboard] = useState({
     success: true,
     message: "Reception dashboard fetched successfully",
     reception: {
@@ -94,9 +58,9 @@ export default function ReceptionDashboard() {
     statistics: {
       totalAppointments: 120,
       todayAppointments: 32,
-      pendingAppointments: 8,
+      pendingAppointments: null,
       confirmedAppointments: 16,
-      completedAppointments: 6,
+      completedAppointments: null,
       cancelledAppointments: 2,
       totalDoctors: 12,
       totalPatients: 85,
@@ -194,6 +158,285 @@ export default function ReceptionDashboard() {
       },
     ],
   });
+  const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchDashboard = async () => {
+  //     try {
+  //       const data = await getReceptionDashboard(receptionId);
+
+  //       setDashboard(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchDashboard();
+  // }, []);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const data = await getAppointments();
+
+        // setAppointments(data);
+        setDashboard({
+          success: true,
+          message: "Reception dashboard fetched successfully",
+          reception: {
+            _id: "65f1234567890abcdef12345",
+            shift: "morning",
+            salary: 25000,
+            joiningDate: "2026-01-15T10:30:00.000Z",
+            status: "active",
+            userId: {
+              name: "Rahul Sharma",
+              email: "rahul.reception@smartcare.com",
+              phone: "+91 98765 43210",
+              profileImage:
+                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop",
+            },
+          },
+          statistics: {
+            totalAppointments: data.totalAppointments,
+            todayAppointments: data.todayAppointments,
+            pendingAppointments: data.pendingAppointments,
+            confirmedAppointments: data.confirmedAppointments,
+            completedAppointments: data.completedAppointments,
+            cancelledAppointments: data.cancelledAppointments,
+            totalDoctors: 12,
+            totalPatients: 85,
+          },
+          todayAppointmentList: data.appointments,
+          // [
+          //   {
+          //     _id: "appt_001",
+          //     appointmentDate: "2026-05-19T10:00:00.000Z",
+          //     status: "pending",
+          //     paymentStatus: "unpaid",
+          //     consultationFees: 500,
+          //     user: {
+          //       name: "Amit Verma",
+          //       phone: "94141XXXXX",
+          //       gender: "Male",
+          //       age: 34,
+          //     },
+          //     doctor: null,
+          //   },
+          //   {
+          //     _id: "appt_002",
+          //     appointmentDate: "2026-05-19T11:30:00.000Z",
+          //     status: "confirmed",
+          //     paymentStatus: "paid",
+          //     consultationFees: 600,
+          //     user: {
+          //       name: "Priya Meena",
+          //       phone: "70141XXXXX",
+          //       gender: "Female",
+          //       age: 28,
+          //     },
+          //     doctor: {
+          //       doctorName: "Dr. S.K. Sharma",
+          //       specialization: "Cardiologist",
+          //       department: "Cardiology",
+          //     },
+          //   },
+          //   {
+          //     _id: "appt_003",
+          //     appointmentDate: "2026-05-19T12:15:00.000Z",
+          //     status: "completed",
+          //     paymentStatus: "paid",
+          //     consultationFees: 400,
+          //     user: {
+          //       name: "Rajesh Dhaked",
+          //       phone: "98290XXXXX",
+          //       gender: "Male",
+          //       age: 45,
+          //     },
+          //     doctor: {
+          //       doctorName: "Dr. Anjali Roy",
+          //       specialization: "Pediatrician",
+          //       department: "Pediatrics",
+          //     },
+          //   },
+          //   {
+          //     _id: "appt_004",
+          //     appointmentDate: "2026-05-19T02:00:00.000Z",
+          //     status: "cancelled",
+          //     paymentStatus: "unpaid",
+          //     consultationFees: 500,
+          //     user: {
+          //       name: "Karan Singh",
+          //       phone: "82390XXXXX",
+          //       gender: "Male",
+          //       age: 22,
+          //     },
+          //     doctor: {
+          //       doctorName: "Dr. S.K. Sharma",
+          //       specialization: "Cardiologist",
+          //       department: "Cardiology",
+          //     },
+          //   },
+          // ],
+          recentAppointments: [
+            {
+              _id: "appt_recent_1",
+              createdAt: "2026-05-19T14:45:00.000Z",
+              status: "confirmed",
+              user: { name: "Vijay Gupta" },
+              doctor: {
+                doctorName: "Dr. Anjali Roy",
+                specialization: "Pediatrician",
+              },
+            },
+            {
+              _id: "appt_recent_2",
+              createdAt: "2026-05-19T14:20:00.000Z",
+              status: "cancelled",
+              user: { name: "Karan Singh" },
+              doctor: {
+                doctorName: "Dr. S.K. Sharma",
+                specialization: "Cardiologist",
+              },
+            },
+          ],
+        });
+        console.log("full appointments data: ", data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+  // Backend Query/Filter States (Directly connects to your API controllers)
+  const [searchFilter, setSearchFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all"); // all, pending, confirmed, completed, cancelled
+
+  // Backend Data Mock State
+  // const [dashboardData, setDashboardData] = useState({
+  //   success: true,
+  //   message: "Reception dashboard fetched successfully",
+  //   reception: {
+  //     _id: "65f1234567890abcdef12345",
+  //     shift: "morning",
+  //     salary: 25000,
+  //     joiningDate: "2026-01-15T10:30:00.000Z",
+  //     status: "active",
+  //     userId: {
+  //       name: "Rahul Sharma",
+  //       email: "rahul.reception@smartcare.com",
+  //       phone: "+91 98765 43210",
+  //       profileImage:
+  //         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop",
+  //     },
+  //   },
+  //   statistics: {
+  //     totalAppointments: 120,
+  //     todayAppointments: 32,
+  //     pendingAppointments: data.pendingAppointments,
+  //     confirmedAppointments: 16,
+  //     completedAppointments: data.completedAppointments,
+  //     cancelledAppointments: 2,
+  //     totalDoctors: 12,
+  //     totalPatients: 85,
+  //   },
+  //   todayAppointmentList: [
+  //     {
+  //       _id: "appt_001",
+  //       appointmentDate: "2026-05-19T10:00:00.000Z",
+  //       status: "pending",
+  //       paymentStatus: "unpaid",
+  //       consultationFees: 500,
+  //       user: {
+  //         name: "Amit Verma",
+  //         phone: "94141XXXXX",
+  //         gender: "Male",
+  //         age: 34,
+  //       },
+  //       doctor: null,
+  //     },
+  //     {
+  //       _id: "appt_002",
+  //       appointmentDate: "2026-05-19T11:30:00.000Z",
+  //       status: "confirmed",
+  //       paymentStatus: "paid",
+  //       consultationFees: 600,
+  //       user: {
+  //         name: "Priya Meena",
+  //         phone: "70141XXXXX",
+  //         gender: "Female",
+  //         age: 28,
+  //       },
+  //       doctor: {
+  //         doctorName: "Dr. S.K. Sharma",
+  //         specialization: "Cardiologist",
+  //         department: "Cardiology",
+  //       },
+  //     },
+  //     {
+  //       _id: "appt_003",
+  //       appointmentDate: "2026-05-19T12:15:00.000Z",
+  //       status: "completed",
+  //       paymentStatus: "paid",
+  //       consultationFees: 400,
+  //       user: {
+  //         name: "Rajesh Dhaked",
+  //         phone: "98290XXXXX",
+  //         gender: "Male",
+  //         age: 45,
+  //       },
+  //       doctor: {
+  //         doctorName: "Dr. Anjali Roy",
+  //         specialization: "Pediatrician",
+  //         department: "Pediatrics",
+  //       },
+  //     },
+  //     {
+  //       _id: "appt_004",
+  //       appointmentDate: "2026-05-19T02:00:00.000Z",
+  //       status: "cancelled",
+  //       paymentStatus: "unpaid",
+  //       consultationFees: 500,
+  //       user: {
+  //         name: "Karan Singh",
+  //         phone: "82390XXXXX",
+  //         gender: "Male",
+  //         age: 22,
+  //       },
+  //       doctor: {
+  //         doctorName: "Dr. S.K. Sharma",
+  //         specialization: "Cardiologist",
+  //         department: "Cardiology",
+  //       },
+  //     },
+  //   ],
+  //   recentAppointments: [
+  //     {
+  //       _id: "appt_recent_1",
+  //       createdAt: "2026-05-19T14:45:00.000Z",
+  //       status: "confirmed",
+  //       user: { name: "Vijay Gupta" },
+  //       doctor: {
+  //         doctorName: "Dr. Anjali Roy",
+  //         specialization: "Pediatrician",
+  //       },
+  //     },
+  //     {
+  //       _id: "appt_recent_2",
+  //       createdAt: "2026-05-19T14:20:00.000Z",
+  //       status: "cancelled",
+  //       user: { name: "Karan Singh" },
+  //       doctor: {
+  //         doctorName: "Dr. S.K. Sharma",
+  //         specialization: "Cardiologist",
+  //       },
+  //     },
+  //   ],
+  // });
 
   const stats = dashboardData.statistics;
   const staff = dashboardData.reception;
@@ -223,8 +466,8 @@ export default function ReceptionDashboard() {
   const filteredAppointments = useMemo(() => {
     return dashboardData.todayAppointmentList.filter((appt) => {
       const matchesSearch =
-        appt.user.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-        appt.user.phone.includes(searchFilter);
+        appt?.patientName?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        appt?.phone?.includes(searchFilter);
       const matchesStatus =
         statusFilter === "all" || appt.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -594,10 +837,11 @@ export default function ReceptionDashboard() {
                       >
                         <td className="p-4">
                           <div>
-                            <p className="font-bold">{appt.user.name}</p>
+                            <p className="font-bold">{appt.patientName}</p>
                             <p className="text-[11px] text-slate-400 mt-0.5">
-                              {appt.user.age} Yrs • {appt.user.gender} •{" "}
-                              {appt.user.phone}
+                              {appt.patientEmail}
+                              {/* Yrs • {appt.user.gender} •{" "}
+                              {appt.user.phone} */}
                             </p>
                           </div>
                         </td>

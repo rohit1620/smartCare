@@ -11,7 +11,7 @@ import User from "../models/User.js";
 // Function: getReceptionDashboard
 // ======================================================
 
-``yj
+
 // @desc    Get Reception Dashboard Data
 // @route   GET /api/reception/dashboard/:id
 // @access  Reception / Admin

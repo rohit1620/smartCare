@@ -466,8 +466,17 @@ export default function QuickAppointmentSection() {
                         >
                           <option>Time</option>
                           <option>09:00 AM</option>
+                          <option>09:15 AM</option>
+                          <option>09:30 AM</option>
+                          <option>09:45 AM</option>
+                          <option>10:00 AM</option>
+                          <option>10:15 AM</option>
+                          <option>10:30 AM</option>
+                          <option>10:45 AM</option>
                           <option>11:00 AM</option>
-                          <option>02:00 PM</option>
+                          <option>11:15 AM</option>
+                          <option>11:30 AM</option>
+                          <option>11:45 AM</option>
                         </select>
                       </div>
                     </div>

@@ -32,7 +32,7 @@ const appointmentSchema =
       },
 
       appointmentDate: {
-        type: String,
+        type: Date,
         required: true,
       },
 

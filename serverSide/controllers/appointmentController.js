@@ -358,14 +358,14 @@ export const getAllAppointments =
       // fetch appointments
       const appointments =
         await Appointment.find(filter)
-          .populate(
-            "patient",
-            "name email phone"
-          )
-          .populate(
-            "assignedDoctor",
-            "name specialization"
-          )
+          // .populate(
+          //   "patient",
+          //   "name email phone"
+          // )
+          // .populate(
+          //   "assignedDoctor",
+          //   "name specialization"
+          // )
           .sort({
             createdAt: -1,
           })
