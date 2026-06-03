@@ -130,3 +130,39 @@ export const loginUser = async (userData) => {
 
   return response.data;
 };
+
+
+
+
+// services/doctorService.js
+
+
+
+export const createDoctor = async (doctorData) => {
+  const response = await API.post(
+    "/doctors/create",
+    doctorData
+  );
+
+  return response.data;
+};
+
+
+
+
+export const getAllDoctors = async () => {
+  try {
+    const response = await API.get("/doctors");
+
+    return response.data;
+  } catch (error) {
+    console.log("Get Doctors Error:", error);
+
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Failed to fetch doctors",
+    };
+  }
+};

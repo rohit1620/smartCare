@@ -20,6 +20,10 @@ const appointmentSchema =
         type: String,
         required: true,
       },
+      assignedDoctorName: {
+        type: String,
+        required: true,
+      },
 
       department: {
         type: String,
@@ -52,14 +56,14 @@ const appointmentSchema =
         default: "pending",
       },
 
-      // assignedDoctor: {
-      //   type:
-      //     mongoose.Schema.Types.ObjectId,
-      //   ref: "User",
-      // },
-      assignedDoctorName: {
-        type: String,
+      assignedDoctor: {
+        type:
+          mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
+      // assignedDoctorName: {
+      //   type: String,
+      // },
 
       paymentStatus: {
         type: String,

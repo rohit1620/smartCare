@@ -1,6 +1,6 @@
-import Doctor from "../models/Doctor.js";
+import Doctor from "../models/doctorSchema.js";
 import mongoose from "mongoose";
-import Appointment from "../models/Appointment.js";
+import Appointment from "../models/appointmentSchema.js";
 
 // ======================================================
 // Function: createDoctor

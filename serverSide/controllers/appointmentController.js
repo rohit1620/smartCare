@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 export const bookAppointment =
   async (req, res) => {
     try {
-
       const {
        patientName,
        patientEmail,
@@ -12,8 +11,18 @@ export const bookAppointment =
         department,
         symptoms,
         appointmentDate,
+        assignedDoctorName,
         timeSlot,
       } = req.body;
+
+      let doctorID;
+     if(assignedDoctorName=="Dr. Michael Lee (Neurologist)"){
+      doctorID = "64a9c8f0d1e2f3g4h5i6j7k8"; // Replace with actual doctor ID
+     }else if(assignedDoctorName=="Dr. Sarah Johnson (Cardiologist)"){
+      doctorID = "64a9c8f0d1e2f3g4h5i6j7k9"; // Replace with actual doctor ID
+     }else if(assignedDoctorName=="Dr. Emily Davis (Pediatrician)"){
+      doctorID = "64a9c8f0d1e2f3g4h5i6j7k0"; // Replace with actual doctor ID
+     }
 
       // validation
       if (
@@ -73,6 +82,8 @@ export const bookAppointment =
           symptoms,
           appointmentDate,
           timeSlot,
+          assignedDoctorName,
+          assignedDoctor: doctorID,
           status: "pending",
         });
 
@@ -369,8 +380,8 @@ export const getAllAppointments =
           .sort({
             createdAt: -1,
           })
-          .skip(skip)
-          .limit(limit);
+          // .skip(skip)
+          // .limit(limit);
 
       // total count
       const totalAppointments =

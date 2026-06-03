@@ -5,6 +5,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoute.js';
 import appointmentRoutes from "./routes/appointmentRoutes.js";
+import doctorRoutes from "./routes/doctorRoutes.js";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use('/api/auth', authRoutes);
 app.use("/api/appointments",
   appointmentRoutes
 );
-
+app.use("/api/doctors", doctorRoutes);
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });

@@ -838,7 +838,7 @@ export default function ReceptionDashboard() {
                         <td className="p-4">
                           <div>
                             <p className="font-bold">{appt.patientName}</p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">
+                            <p className="text-[11px] text-slate-700 mt-0.5">
                               {appt.patientEmail}
                               {/* Yrs • {appt.user.gender} •{" "}
                               {appt.user.phone} */}
@@ -846,13 +846,13 @@ export default function ReceptionDashboard() {
                           </div>
                         </td>
                         <td className="p-4">
-                          {appt.doctor ? (
+                          {appt?.assignedDoctorName ? (
                             <div>
-                              <p className="font-medium text-slate-200 dark:text-slate-200">
-                                {appt.doctor.doctorName}
+                              <p className="font-medium text-black dark:text-slate-200">
+                                {appt?.assignedDoctorName}
                               </p>
-                              <p className="text-[10px] text-slate-400">
-                                {appt.doctor.specialization}
+                              <p className="text-[10px] text-slate-700">
+                                {appt?.department}
                               </p>
                             </div>
                           ) : (
