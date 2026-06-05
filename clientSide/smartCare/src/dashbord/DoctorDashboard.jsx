@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { fetchDoctorAppointments } from "../services/receptionService";
 import {
   User,
   Calendar,
@@ -18,12 +19,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+// import { doctorLogin } from "../services/receptionService";
+import { useLocation } from "react-router-dom";
 
-// ==========================================
-// MOCK DATA BASED DIRECTLY ON BACKEND SCHEMA
-// ==========================================
 const MOCK_DOCTOR = {
-  _id: "64b2f123c5e89a001def4567",
+  _id: null,
   doctorName: "Dr. Arvind Sharma",
   specialization: "Cardiologist",
   experience: 12,
@@ -36,87 +36,64 @@ const MOCK_DOCTOR = {
   status: "active",
 };
 
-const MOCK_APPOINTMENTS = [
-  {
-    _id: "ap1",
-    appointmentDate: "2026-05-20T10:30:00.000Z",
-    status: "confirmed",
-    user: {
-      name: "Rahul Verma",
-      email: "rahul@gmail.com",
-      phone: "+91 9876543210",
-      gender: "Male",
-      age: 45,
-    },
-  },
-  {
-    _id: "ap2",
-    appointmentDate: "2026-05-20T11:45:00.000Z",
-    status: "pending",
-    user: {
-      name: "Priya Patel",
-      email: "priya@gmail.com",
-      phone: "+91 8765432109",
-      gender: "Female",
-      age: 32,
-    },
-  },
-  {
-    _id: "ap3",
-    appointmentDate: "2026-05-19T09:15:00.000Z",
-    status: "completed",
-    user: {
-      name: "Amit Singh",
-      email: "amit@gmail.com",
-      phone: "+91 7654321098",
-      gender: "Male",
-      age: 60,
-    },
-  },
-  {
-    _id: "ap4",
-    appointmentDate: "2026-05-18T16:00:00.000Z",
-    status: "cancelled",
-    user: {
-      name: "Sneha Reddy",
-      email: "sneha@gmail.com",
-      phone: "+91 6543210987",
-      gender: "Female",
-      age: 28,
-    },
-  },
-  {
-    _id: "ap5",
-    appointmentDate: "2026-05-21T14:00:00.000Z",
-    status: "confirmed",
-    user: {
-      name: "Vikram Malhotra",
-      email: "vikram@gmail.com",
-      phone: "+91 9988776655",
-      gender: "Male",
-      age: 52,
-    },
-  },
-];
-
 export default function DoctorDashboard() {
-  // Theme State
   const [darkMode, setDarkMode] = useState(false);
-
-  // Controller states matching query/body options
-  const [activeTab, setActiveTab] = useState("appointments"); // "appointments" | "patients" | "profile"
-  const [statusFilter, setStatusFilter] = useState(""); // empty string acts as "All"
+  const [MOCK_APPOINTMENTS, setMOCK_APPOINTMENTS] = useState([]);
+  const [activeTab, setActiveTab] = useState("appointments");
+  const [statusFilter, setStatusFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [appointmentDateFilter, setAppointmentDateFilter] = useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 3;
-
-  // Manage Availability array state safely (Matches PATCH controller route)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [doctorAvailability, setDoctorAvailability] = useState(
     MOCK_DOCTOR.availability,
   );
 
-  // Statistics Calculation (Derived exactly from backend stats variables)
+  const location = useLocation();
+  const doctorId = new URLSearchParams(location.search).get("doctorId");
+  console.log("Extracted doctorId from URL:", doctorId);
+
+  // invailid doctorId hone par bhi dashboard khul raha tha, isliye ek check lagaya hai ki agar doctorId milta hai to hi MOCK_DOCTOR ka _id set karega. Agar doctorId nahi milega to dashboard khulega lekin appointments load nahi honge, aur console me doctorId null ya undefined dikhayega, jisse pata chalega ki URL me doctorId missing hai.
+  // okay ye to tik hai lakin doctorId kyu nhi mil rhi hai login ke badd?
+
+  useEffect(() => {
+    if (doctorId) {
+      MOCK_DOCTOR._id = doctorId;
+    }
+  }, [doctorId]);
+
+  useEffect(() => {
+    const getAppointments = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const id = MOCK_DOCTOR._id;
+        //  "6a1fea152b88d7343271e4a6";
+
+        const data = await fetchDoctorAppointments(id, {
+          status: statusFilter,
+          limit: 10,
+          sort: "appointmentDate",
+          order: "desc",
+        });
+
+        if (data.success) {
+          setMOCK_APPOINTMENTS(data.appointments);
+        }
+      } catch (err) {
+        setError(err.message || "अपॉइंटमेंट लोड करने में दिक्कत आ रही है।");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getAppointments();
+  }, [statusFilter]); // statusFilter बदलने पर दोबारा फेच करें
+
+  // FIX 1: dependency array में MOCK_APPOINTMENTS को जोड़ा ताकि डेटा आते ही यह दोबारा चले
   const statistics = useMemo(() => {
     return {
       totalAppointments: MOCK_APPOINTMENTS.length,
@@ -137,23 +114,24 @@ export default function DoctorDashboard() {
           (a) => a.status === "completed" || a.status === "confirmed",
         ).length * MOCK_DOCTOR.fees,
     };
-  }, []);
+  }, [MOCK_APPOINTMENTS]);
 
-  // Filter Pipeline: Mimics getDoctorAppointments & getDoctorPatients logic
+  // FIX 2: dependencies में MOCK_APPOINTMENTS को शामिल किया
   const filteredAppointments = useMemo(() => {
     return MOCK_APPOINTMENTS.filter((item) => {
-      // 1. Status Filter match
       if (statusFilter && item.status !== statusFilter) return false;
 
-      // 2. Search Patient Name match ($regex logic fallback)
+      // Safe check if patientName or user.name exists
+      const nameToSearch = item.patientName || item.user?.name || "";
       if (
         searchQuery &&
-        !item.user.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+        !nameToSearch.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
         return false;
+      }
 
-      // 3. Date Matching logic
       if (appointmentDateFilter) {
+        if (!item.appointmentDate) return false;
         const itemDateStr = new Date(item.appointmentDate)
           .toISOString()
           .split("T")[0];
@@ -161,29 +139,34 @@ export default function DoctorDashboard() {
       }
       return true;
     });
-  }, [statusFilter, searchQuery, appointmentDateFilter]);
+  }, [MOCK_APPOINTMENTS, statusFilter, searchQuery, appointmentDateFilter]);
 
-  // Pagination chunking
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   const paginatedAppointments = useMemo(() => {
     const skip = (page - 1) * itemsPerPage;
     return filteredAppointments.slice(skip, skip + itemsPerPage);
   }, [filteredAppointments, page]);
 
-  // Handle Availability Toggle Action
   const toggleDay = (day) => {
     const updated = doctorAvailability.includes(day)
       ? doctorAvailability.filter((d) => d !== day)
       : [...doctorAvailability, day];
     setDoctorAvailability(updated);
-    // Real application context: Trigger fetch() PATCH: /api/doctors/:id/availability here
   };
+
+  if (loading)
+    return <p className="p-8 text-center text-sm">Loading Dashboard Data...</p>;
+  if (error)
+    return (
+      <p className="p-8 text-center text-sm" style={{ color: "red" }}>
+        {error}
+      </p>
+    );
 
   return (
     <div
       className={`${darkMode ? "dark bg-slate-950 text-slate-50" : "bg-slate-50 text-slate-900"} min-h-screen transition-colors duration-300 font-sans`}
     >
-      {/* Top Navbar Section */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-gradient-to-tr from-emerald-500 to-teal-600 rounded-xl text-white shadow-md shadow-emerald-500/20">
@@ -210,13 +193,11 @@ export default function DoctorDashboard() {
               <Moon size={18} className="text-indigo-600" />
             )}
           </button>
-
           <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-800" />
-
           <div className="flex items-center gap-3">
             <img
               src={MOCK_DOCTOR.profileImage}
-              alt="Doctor profile"
+              alt="Doctor"
               className="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/20"
             />
             <div className="hidden md:block">
@@ -230,75 +211,74 @@ export default function DoctorDashboard() {
         </div>
       </header>
 
-      {/* Main Container */}
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-8">
-        {/* Backend Variable Metrics Matrix Cards */}
+        {/* Statistics Metric Cards */}
         <section className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Total Bookings
               </span>
-              <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-xl">
+              <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-xl">
                 <Calendar size={18} />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold tracking-tight">
+              <h3 className="text-2xl font-bold">
                 {statistics.totalAppointments}
               </h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Confirmed
               </span>
-              <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-xl">
+              <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 rounded-xl">
                 <CheckCircle size={18} />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400">
+              <h3 className="text-2xl font-bold text-indigo-600">
                 {statistics.confirmedAppointments}
               </h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Pending
               </span>
-              <div className="p-2 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-xl">
+              <div className="p-2 bg-amber-50 dark:bg-amber-950/50 text-amber-600 rounded-xl">
                 <Clock size={18} />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold tracking-tight text-amber-500">
+              <h3 className="text-2xl font-bold text-amber-500">
                 {statistics.pendingAppointments}
               </h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Completed
               </span>
-              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-xl">
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 rounded-xl">
                 <CheckCircle size={18} />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold tracking-tight text-emerald-500">
+              <h3 className="text-2xl font-bold text-emerald-500">
                 {statistics.completedAppointments}
               </h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-4 col-span-2 lg:col-span-1 flex flex-col justify-between shadow-sm border-l-4 border-l-emerald-500">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm border-l-4 border-l-emerald-500">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Est. Earnings
@@ -308,27 +288,25 @@ export default function DoctorDashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+              <h3 className="text-2xl font-bold text-emerald-600">
                 ₹{statistics.estimatedEarnings}
               </h3>
             </div>
           </div>
         </section>
 
-        {/* Dashboard Visual Layout Matrix */}
+        {/* Filters and List pipeline */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Left / Top Controls Area (2 Columns) */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Controller Filters Header Block */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800/60 rounded-xl w-fit">
+                <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
                   <button
                     onClick={() => {
                       setActiveTab("appointments");
                       setStatusFilter("");
                     }}
-                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === "appointments" ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-300"}`}
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === "appointments" ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" : "text-slate-500"}`}
                   >
                     Appointments Query
                   </button>
@@ -337,17 +315,16 @@ export default function DoctorDashboard() {
                       setActiveTab("patients");
                       setStatusFilter("completed");
                     }}
-                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === "patients" ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-300"}`}
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === "patients" ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" : "text-slate-500"}`}
                   >
                     Patient History ({statistics.completedAppointments})
                   </button>
                 </div>
 
-                {/* Inline Status Routing Pill Badges */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                <div className="flex items-center gap-1.5 overflow-x-auto">
                   <SlidersHorizontal
                     size={14}
-                    className="text-slate-400 mr-1 flex-shrink-0"
+                    className="text-slate-400 mr-1"
                   />
                   {["", "confirmed", "pending", "completed", "cancelled"].map(
                     (st) => (
@@ -357,7 +334,7 @@ export default function DoctorDashboard() {
                           setStatusFilter(st);
                           setPage(1);
                         }}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize border whitespace-nowrap transition-all ${statusFilter === st ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-100 dark:border-slate-100 dark:text-slate-950" : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-300 dark:hover:border-slate-700"}`}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize border transition-all ${statusFilter === st ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950" : "text-slate-500 border-slate-200 dark:border-slate-800"}`}
                       >
                         {st === "" ? "Show All" : st}
                       </button>
@@ -366,8 +343,7 @@ export default function DoctorDashboard() {
                 </div>
               </div>
 
-              {/* Dynamic Sub-query Input Controls */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div className="relative">
                   <Search
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -381,10 +357,9 @@ export default function DoctorDashboard() {
                       setPage(1);
                     }}
                     placeholder="Search query by patient name..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
                   />
                 </div>
-
                 <input
                   type="date"
                   value={appointmentDateFilter}
@@ -392,97 +367,99 @@ export default function DoctorDashboard() {
                     setAppointmentDateFilter(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full px-4 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
                 />
               </div>
             </div>
 
-            {/* Main Dynamic Table Data Renderer List */}
+            {/* Renderer List */}
             <div className="space-y-3">
               {paginatedAppointments.length > 0 ? (
                 paginatedAppointments.map((ap) => (
                   <div
                     key={ap._id}
-                    className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-5 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 flex-shrink-0 font-bold text-sm uppercase">
-                        {ap.user.name.charAt(0)}
+                      <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold text-sm uppercase">
+                        {(ap.patientName || ap.user?.name || "P").charAt(0)}
                       </div>
                       <div className="space-y-1">
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                          {ap.user.name}
-                          <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
-                            ({ap.user.age} yrs • {ap.user.gender})
+                          {ap.patientName || ap.user?.name}
+                          {/* FIX 3: Optional Chaining (?.) का उपयोग किया ताकि डेटा न होने पर क्रैश न हो */}
+                          <span className="text-xs font-normal text-slate-400">
+                            ({ap.user?.age || "N/A"} yrs •{" "}
+                            {ap.user?.gender || "N/A"})
                           </span>
                         </h4>
                         <div className="text-xs text-slate-500 dark:text-slate-400 space-y-0.5">
                           <p>
-                            Contact: {ap.user.phone} | {ap.user.email}
+                            Contact:{" "}
+                            {ap.patientPhone || ap.user?.phone || "N/A"} |{" "}
+                            {ap.patientEmail || ap.user?.email || "N/A"}
                           </p>
                           <p className="flex items-center gap-1 text-slate-400">
                             <Calendar size={12} />{" "}
-                            {new Date(ap.appointmentDate).toLocaleString()}
+                            {ap.appointmentDate
+                              ? new Date(ap.appointmentDate).toLocaleString()
+                              : "N/A"}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-0 pt-3 sm:pt-0">
                       <span className="text-xs font-semibold text-slate-400 sm:hidden">
-                        Appointment Status:
+                        Status:
                       </span>
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider ${
                           ap.status === "confirmed"
-                            ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
+                            ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40"
                             : ap.status === "pending"
-                              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+                              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40"
                               : ap.status === "completed"
-                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
-                                : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400"
+                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40"
+                                : "bg-rose-50 text-rose-700"
                         }`}
                       >
-                        {ap.status === "confirmed" && <CheckCircle size={12} />}
-                        {ap.status === "pending" && <Clock size={12} />}
-                        {ap.status === "completed" && <CheckCircle size={12} />}
-                        {ap.status === "cancelled" && <XCircle size={12} />}
                         {ap.status}
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center text-slate-400 space-y-2">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-12 text-center text-slate-400">
                   <AlertCircle
                     size={32}
-                    className="mx-auto text-slate-300 dark:text-slate-700"
+                    className="mx-auto text-slate-300 mb-2"
                   />
                   <p className="text-sm font-medium">
-                    No system records match current pipeline filters
+                    No system records match current filters
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Pagination Controls Section */}
+            {/* Pagination UI */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-2">
-                <p className="text-xs font-medium text-slate-400">
-                  Showing page {page} of {totalPages || 1}
+                <p className="text-xs text-slate-400">
+                  Showing page {page} of {totalPages}
                 </p>
                 <div className="flex items-center gap-1.5">
                   <button
                     disabled={page === 1}
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                    className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 transition-colors"
+                    className="p-2 border rounded-xl disabled:opacity-40"
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button
                     disabled={page === totalPages}
                     onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                    className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 transition-colors"
+                    className="p-2 border rounded-xl disabled:opacity-40"
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -491,20 +468,13 @@ export default function DoctorDashboard() {
             )}
           </div>
 
-          {/* Right Statistics & Visual Metadata Column */}
+          {/* Right Column (Analytics & Profile info) */}
           <div className="space-y-6">
-            {/* Distribution Graph Representation Chart alternative via Tailwind bars */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Appointment Analytics Chart
-                </h4>
-                <p className="text-xs text-slate-400 dark:text-slate-500">
-                  Live operational loads metric visual representation
-                </p>
-              </div>
-
-              <div className="space-y-3 pt-2">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Appointment Analytics
+              </h4>
+              <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-xs font-medium mb-1">
                     <span>Confirmed Ops</span>
@@ -512,21 +482,20 @@ export default function DoctorDashboard() {
                       {Math.round(
                         (statistics.confirmedAppointments /
                           statistics.totalAppointments) *
-                          100 || 0,
-                      )}
+                          100,
+                      ) || 0}
                       %
                     </span>
                   </div>
                   <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-indigo-500 transition-all rounded-full"
+                      className="h-full bg-indigo-500 dynamic-bar"
                       style={{
                         width: `${(statistics.confirmedAppointments / statistics.totalAppointments) * 100 || 0}%`,
                       }}
                     />
                   </div>
                 </div>
-
                 <div>
                   <div className="flex justify-between text-xs font-medium mb-1">
                     <span>Completed Target</span>
@@ -534,38 +503,16 @@ export default function DoctorDashboard() {
                       {Math.round(
                         (statistics.completedAppointments /
                           statistics.totalAppointments) *
-                          100 || 0,
-                      )}
+                          100,
+                      ) || 0}
                       %
                     </span>
                   </div>
                   <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-500 transition-all rounded-full"
+                      className="h-full bg-emerald-500"
                       style={{
                         width: `${(statistics.completedAppointments / statistics.totalAppointments) * 100 || 0}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-medium mb-1">
-                    <span>Pending Queries</span>
-                    <span className="font-bold">
-                      {Math.round(
-                        (statistics.pendingAppointments /
-                          statistics.totalAppointments) *
-                          100 || 0,
-                      )}
-                      %
-                    </span>
-                  </div>
-                  <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-amber-500 transition-all rounded-full"
-                      style={{
-                        width: `${(statistics.pendingAppointments / statistics.totalAppointments) * 100 || 0}%`,
                       }}
                     />
                   </div>
@@ -573,15 +520,13 @@ export default function DoctorDashboard() {
               </div>
             </div>
 
-            {/* Doctor Profile Metadata Box Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Doctor Information Profile
               </h4>
-
               <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-400">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-400">
+                  <div className="p-2 bg-slate-50 dark:bg-slate-950 rounded-xl">
                     <User size={14} />
                   </div>
                   <div>
@@ -593,9 +538,8 @@ export default function DoctorDashboard() {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-400">
+                  <div className="p-2 bg-slate-50 dark:bg-slate-950 rounded-xl">
                     <Briefcase size={14} />
                   </div>
                   <p>
@@ -605,9 +549,8 @@ export default function DoctorDashboard() {
                     • {MOCK_DOCTOR.experience} Years Experience
                   </p>
                 </div>
-
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-400">
+                  <div className="p-2 bg-slate-50 dark:bg-slate-950 rounded-xl">
                     <MapPin size={14} />
                   </div>
                   <p>
@@ -617,9 +560,8 @@ export default function DoctorDashboard() {
                     </span>
                   </p>
                 </div>
-
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-400">
+                  <div className="p-2 bg-slate-50 dark:bg-slate-950 rounded-xl">
                     <FileText size={14} />
                   </div>
                   <p>
@@ -629,45 +571,6 @@ export default function DoctorDashboard() {
                     </span>
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Managed Availability Action Module (Toggles array dynamically based on updateDoctorAvailability) */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Manage Availability Matrix
-                </h4>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Click pills to update active tracking arrays directly.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2 pt-1">
-                {[
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
-                  "Sunday",
-                ].map((day) => {
-                  const isActive = doctorAvailability.includes(day);
-                  return (
-                    <button
-                      key={day}
-                      onClick={() => toggleDay(day)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                        isActive
-                          ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400"
-                          : "bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-slate-800 text-slate-400 hover:text-slate-600"
-                      }`}
-                    >
-                      {day.substring(0, 3)}
-                    </button>
-                  );
-                })}
               </div>
             </div>
           </div>

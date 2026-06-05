@@ -166,3 +166,29 @@ export const getAllDoctors = async () => {
     };
   }
 };
+
+
+
+export const fetchDoctorAppointments = async (doctorId, queryParams = {}) => {
+  try {
+    const response = await API.get(`/doctors/${doctorId}`, {
+      params: queryParams, // यह क्वेरी पैरामीटर्स (?status=pending&page=1) को संभालेगा
+    });
+    return response.data; // बैकएंड का पूरा JSON रिस्पांस रिटर्न करेगा
+  } catch (error) {
+    // एरर हैंडलिंग ताकि फ्रंटएंड पर सही मैसेज दिखे
+    throw error.response ? error.response.data : new Error("Network Error");
+  }
+};
+
+export const doctorLogin = async (credentials) => {
+  try {
+    const response = await API.post("/doctors/login", credentials);
+    return response.data; // लॉगिन सफल होने पर डॉक्टर का डेटा रिटर्न करेगा
+  } catch (error) {
+    // एरर हैंडलिंग ताकि फ्रंटएंड पर सही मैसेज दिखे
+    throw error.response ? error.response.data : new Error("Network Error");
+  } 
+};
+
+

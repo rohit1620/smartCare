@@ -20,6 +20,8 @@ export const createDoctor = async (req, res) => {
       department,
       profileImage,
       status,
+      email,
+      password
     } = req.body;
 
     // ======================================================
@@ -70,6 +72,8 @@ export const createDoctor = async (req, res) => {
       department: department.trim(),
       profileImage,
       status,
+      email: email.trim(),
+      password: password.trim(),
     });
 
     // ======================================================
@@ -673,8 +677,8 @@ export const getDoctorAppointments = async (req, res) => {
     // ======================================================
 
     const filters = {
-      doctor: id,
-    };
+  assignedDoctor: id,
+};
 
     // Appointment Status Filter
     if (status) {
@@ -717,12 +721,12 @@ export const getDoctorAppointments = async (req, res) => {
     // ======================================================
 
     const appointments = await Appointment.find(filters)
+      // .populate({
+      //   path: "assignedDoctor",
+      //   select: "name email phone",
+      // })
       .populate({
-        path: "user",
-        select: "name email phone profileImage gender age",
-      })
-      .populate({
-        path: "doctor",
+        path: "assignedDoctor",
         select: "doctorName specialization department",
       })
       .sort(sortOption)
@@ -794,6 +798,15 @@ export const getDoctorAppointments = async (req, res) => {
     });
   }
 };
+
+// export const getDoctorAppointments= async (req, res) => {
+//   const {id} = req.params;
+//   res.status(200).json({
+//     success: true,
+//     message: "Doctor appointments fetched successfully",
+//     id:id
+//   });
+// }
 
 
 
@@ -883,6 +896,80 @@ export const updateDoctorAvailability = async (req, res) => {
     });
   } catch (error) {
     console.log("Update Doctor Availability Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
+// if (
+//         formData.role === "doctor" &&
+//         formData.email !== "doctor@example.com" &&
+//         formData.password !== "doctor123"
+//       ) {
+//         throw new Error("Invalid doctor credentials.");
+//       }  ye code doctor login ke liye hai, isme doctor ke email aur password ko check kiya ja raha hai. ye abi static hai muje dynamic karna hai taki doctor apne email aur password se login kar sake. iske liye mujhe doctorController me login function create karna padega jisme doctor ke email aur password ko database se match karke token generate karna hoga. phir us token ko client side me store karke authentication ke liye use karna hoga.
+
+export const doctorLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide email and password",
+      });
+    }
+
+    const doctor = await Doctor.findOne({ email: email.trim() });
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    // const isMatch = await bcrypt.compare(password, doctor.password);
+
+    // if (!isMatch) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Invalid credentials",
+    //   });
+    // }
+
+    if (password !== doctor.password) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // const token = jwt.sign(
+    //   { id: doctor._id, role: doctor.role },
+    //   process.env.JWT_SECRET,
+    //   { expiresIn: "1h" }
+    // );
+
+    return res.status(200).json({
+      success: true,
+      message: "Doctor logged in successfully",
+      // token,
+      doctor: {
+        id: doctor._id,
+        name: doctor.name,
+        email: doctor.email,
+        specialization: doctor.specialization,
+        availability: doctor.availability,
+      },
+    });
+  } catch (error) {
+    console.log("Doctor Login Error:", error);
 
     return res.status(500).json({
       success: false,

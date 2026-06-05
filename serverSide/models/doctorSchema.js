@@ -60,6 +60,19 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // Email
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    // Password
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },  
 
     // Doctor Account Status
     status: {

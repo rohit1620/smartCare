@@ -59,7 +59,7 @@ const appointmentSchema =
       assignedDoctor: {
         type:
           mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Doctor",
       },
       // assignedDoctorName: {
       //   type: String,

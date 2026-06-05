@@ -16,7 +16,8 @@ const App = () => {
       pathname !== "/dashboard/doctor" &&
       pathname !== "/dashboard/user" &&
       pathname !== "/dashboard/medical" &&
-      pathname !== "/dashboard/admindoctor" ? (
+      pathname !== "/dashboard/admindoctor" &&
+      pathname !== "/login" ? (
         <Navbar />
       ) : null}
 

@@ -17,7 +17,7 @@ export const bookAppointment =
 
       let doctorID;
      if(assignedDoctorName=="Dr. Michael Lee (Neurologist)"){
-      doctorID = "64a9c8f0d1e2f3g4h5i6j7k8"; // Replace with actual doctor ID
+      doctorID = "6a1fea152b88d7343271e4a6"; // Replace with actual doctor ID
      }else if(assignedDoctorName=="Dr. Sarah Johnson (Cardiologist)"){
       doctorID = "64a9c8f0d1e2f3g4h5i6j7k9"; // Replace with actual doctor ID
      }else if(assignedDoctorName=="Dr. Emily Davis (Pediatrician)"){
