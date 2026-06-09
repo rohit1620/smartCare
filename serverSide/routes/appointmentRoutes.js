@@ -54,7 +54,7 @@ router.get(
   getAllAppointments
 );
 
-router.put(
+router.patch(
   "/status/:id",
   // verifyToken,
   // authorizeRoles(

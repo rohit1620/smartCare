@@ -191,4 +191,14 @@ export const doctorLogin = async (credentials) => {
   } 
 };
 
+export const updateAppointmentStatus = async (appointmentId, status) => {
+  try {
+    const response = await API.patch(`/appointments/status/${appointmentId}`, { status="confirmed" });
+    return response.data; // अपडेटेड अपॉइंटमेंट डेटा रिटर्न करेगा
+  } catch (error) {
+    // एरर हैंडलिंग ताकि फ्रंटएंड पर सही मैसेज दिखे
+    throw error.response ? error.response.data : new Error("Network Error");
+  }
+};
+
 

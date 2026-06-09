@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { getAppointments } from "../services/receptionService";
+import AssignPaymentModal from "./components/AssignPaymentModalAssignPaymentModal";
 import {
   Sun,
   Moon,
@@ -35,6 +36,9 @@ import {
 
 export default function ReceptionDashboard() {
   // Theme & Layout States
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   // const [data, setData] = useState(null);
@@ -482,6 +486,14 @@ export default function ReceptionDashboard() {
   //  if (loading) return <h1>Loa
   // ding...</h1>;
 
+  // const [selectedGuest, setSelectedGuest] = useState(null);
+
+  // Jab "Assign Payment" button click hoga
+  const handleAssignClick = () => {
+    // setSelectedGuest(guest); // Kis guest ka payment hai vo save kiya
+    setIsModalOpen(true); // Popup open kiya
+  };
+
   return (
     <div
       className={`min-h-screen font-sans transition-colors duration-200 ${darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-800"}`}
@@ -899,16 +911,21 @@ export default function ReceptionDashboard() {
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
-                            {!appt.doctor && (
-                              <button
-                                onClick={() =>
-                                  handleActionClick("Assign", apppt._id)
-                                }
-                                className="px-2.5 py-1 rounded-md font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
-                              >
-                                Assign Doctor
-                              </button>
-                            )}
+                            <button
+                              onClick={() => handleAssignClick()}
+                              className="px-2.5 py-1 rounded-md font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all cursor-pointer"
+                            >
+                              Assign Payment
+                            </button>
+
+                            {/* PAYMENT POPUP COMPONENT */}
+                            <AssignPaymentModal
+                              isOpen={isModalOpen}
+                              onClose={() => setIsModalOpen(false)}
+                              id={appt._id}
+                              // guestData={selectedGuest}
+                              // onSave={handleSavePayment}
+                            />
                             {appt.paymentStatus === "unpaid" && (
                               <button
                                 onClick={() =>

@@ -482,14 +482,14 @@ export const updateAppointmentStatus =
       const { status } = req.body;
 
       // admin check
-      if (
-        req.user.role !== "admin"
-      ) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied",
-        });
-      }
+      // if (
+      //   req.user.role !== "admin" ||req.user.role !== "receptionist"
+      // ) {
+      //   return res.status(403).json({
+      //     success: false,
+      //     message: "Access denied",
+      //   });
+      // }
 
       // validate mongo id
       if (
