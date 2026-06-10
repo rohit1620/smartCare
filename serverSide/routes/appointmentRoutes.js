@@ -55,7 +55,7 @@ router.get(
 );
 
 router.patch(
-  "/status/:id",
+  "/status/:appointmentId",
   // verifyToken,
   // authorizeRoles(
   //   "admin",

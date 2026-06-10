@@ -22,7 +22,7 @@ const appointmentSchema =
       },
       assignedDoctorName: {
         type: String,
-        required: true,
+        // required: true,
       },
 
       department: {
@@ -69,6 +69,15 @@ const appointmentSchema =
         type: String,
         enum: ["pending", "paid"],
         default: "pending",
+      },
+      fees: {
+        type: Number,
+        default: 0,
+      },
+      paymode: {
+        type: String,
+        enum: ["Cash", "Card", "UPI",""],
+        default: "",
       },
 
       visited: {

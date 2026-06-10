@@ -191,9 +191,9 @@ export const doctorLogin = async (credentials) => {
   } 
 };
 
-export const updateAppointmentStatus = async (appointmentId, status) => {
+export const updateAppointmentStatus = async (appointmentId, payload) => {
   try {
-    const response = await API.patch(`/appointments/status/${appointmentId}`, { status="confirmed" });
+    const response = await API.patch(`/appointments/status/${appointmentId}`, payload);
     return response.data; // अपडेटेड अपॉइंटमेंट डेटा रिटर्न करेगा
   } catch (error) {
     // एरर हैंडलिंग ताकि फ्रंटएंड पर सही मैसेज दिखे

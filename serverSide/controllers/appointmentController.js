@@ -19,9 +19,9 @@ export const bookAppointment =
      if(assignedDoctorName=="Dr. Michael Lee (Neurologist)"){
       doctorID = "6a1fea152b88d7343271e4a6"; // Replace with actual doctor ID
      }else if(assignedDoctorName=="Dr. Sarah Johnson (Cardiologist)"){
-      doctorID = "64a9c8f0d1e2f3g4h5i6j7k9"; // Replace with actual doctor ID
-     }else if(assignedDoctorName=="Dr. Emily Davis (Pediatrician)"){
-      doctorID = "64a9c8f0d1e2f3g4h5i6j7k0"; // Replace with actual doctor ID
+      doctorID = "6a1fec3c2b88d7343271e4a7"; // Replace with actual doctor ID
+     }else if(assignedDoctorName=="Dr. David Miller (Orthopedic)"){
+      doctorID = "6a293bc47fd07a2bab7adaf7"; // Replace with actual doctor ID
      }
 
       // validation
@@ -477,9 +477,9 @@ export const updateAppointmentStatus =
   async (req, res) => {
     try {
 
-      const { id } = req.params;
+      const { appointmentId } = req.params;
 
-      const { status } = req.body;
+      const { status,paymentStatus,fees,paymode } = req.body;
 
       // admin check
       // if (
@@ -494,7 +494,7 @@ export const updateAppointmentStatus =
       // validate mongo id
       if (
         !mongoose.Types.ObjectId.isValid(
-          id
+          appointmentId
         )
       ) {
         return res.status(400).json({
@@ -524,49 +524,27 @@ export const updateAppointmentStatus =
       }
 
       // find appointment
-      const appointment =
-        await Appointment.findById(id);
+     const appointment = await Appointment.findByIdAndUpdate(
+  appointmentId,
+  { 
+    status: status,
+    // Agar status completed hai toh completedAt bhi update kar dein
+    ...(status === "completed" && { completedAt: new Date() }),
+    ...(status === "cancelled" && { cancelledAt: new Date() }),
+    paymentStatus: paymentStatus,
+    fees: fees,
+    paymode: paymode
 
-      // check appointment
-      if (!appointment) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Appointment not found",
-        });
-      }
+  },
+  { new: true, runValidators: false } // runValidators: false karne se baaki required fields check nahi hongi
+);
 
-      // business rules
-      if (
-        appointment.status ===
-        "completed"
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Completed appointment cannot be updated",
-        });
-      }
-
-      // update status
-      appointment.status = status;
-
-      // timestamps
-      if (
-        status === "completed"
-      ) {
-        appointment.completedAt =
-          new Date();
-      }
-
-      if (
-        status === "cancelled"
-      ) {
-        appointment.cancelledAt =
-          new Date();
-      }
-
-      await appointment.save();
+if (!appointment) {
+  return res.status(404).json({
+    success: false,
+    message: "Appointment not found",
+  });
+}
 
       // response
       res.status(200).json({
@@ -580,10 +558,11 @@ export const updateAppointmentStatus =
 
       console.log(error);
 
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-      });
+       res.status(500).json({
+    success: false,
+    message: error.message,
+    error: error.errors || error,
+  });
     }
   };
 

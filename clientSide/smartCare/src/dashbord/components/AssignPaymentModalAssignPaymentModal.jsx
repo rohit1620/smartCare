@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+// muje yaha updateAppoinmentStatus function jo receptionService file me hai use import karna hai app suggestion do
+import { updateAppointmentStatus } from "../../services/receptionService";
 
-const AssignPaymentModal = ({ isOpen, onClose, guestData, onSave }) => {
+const AssignPaymentModal = ({ isOpen, onClose, guestData, onSave, id }) => {
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("UPI");
   const [status, setStatus] = useState("Pending");
@@ -12,13 +14,34 @@ const AssignPaymentModal = ({ isOpen, onClose, guestData, onSave }) => {
     e.preventDefault();
 
     // Jo data save karna hai use parent component me bhej rahe hain
-    onSave({
-      guestId: guestData?.id,
-      amount: amount,
-      method: paymentMethod,
-      status: status,
-      date: new Date().toLocaleDateString(),
-    });
+    console.log("Id kya aa gyi", id);
+    let payload = {
+      status: "confirmed",
+      paymentStatus: "paid",
+      paymode: paymentMethod,
+      fees: amount,
+    };
+    updateAppointmentStatus(id, payload)
+      .then((res) => {
+        console.log("Status updated successfully:", res);
+        // onSave({
+        //   guestId: guestData?.id,
+        //   amount: amount,
+        //   method: paymentMethod,
+        // });
+      })
+      .catch((err) => {
+        console.error("Error updating status:", err);
+        // Yaha par error handling kar sakte hain, jaise ki user ko error message dikhana
+      });
+
+    // onSave({
+    //   guestId: guestData?.id,
+    //   amount: amount,
+    //   method: paymentMethod,
+    //   status: status,
+    //   date: new Date().toLocaleDateString(),
+    // });
 
     // Form clear aur close karne ke liye
     setAmount("");

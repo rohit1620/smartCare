@@ -40,6 +40,8 @@ export default function ReceptionDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [darkMode, setDarkMode] = useState(false);
+  // invalid appointment id error de rha hai niche jo ids ka usestate hai usime koi dikat nhi hai na
+  const [ids, setIds] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   // const [data, setData] = useState(null);
   const [dashboardData, setDashboard] = useState({
@@ -489,9 +491,10 @@ export default function ReceptionDashboard() {
   // const [selectedGuest, setSelectedGuest] = useState(null);
 
   // Jab "Assign Payment" button click hoga
-  const handleAssignClick = () => {
+  const handleAssignClick = (id) => {
     // setSelectedGuest(guest); // Kis guest ka payment hai vo save kiya
     setIsModalOpen(true); // Popup open kiya
+    setIds(id);
   };
 
   return (
@@ -546,9 +549,9 @@ export default function ReceptionDashboard() {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex w-[80%] lg:w-[90%] mx-auto">
         {/* Left Sidebar */}
-        <aside
+        {/* <aside
           className={`fixed inset-y-0 left-0 top-[69px] z-30 w-64 border-r transition-all lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} ${darkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"}`}
         >
           <div className="p-4 flex flex-col h-[calc(100vh-69px)] justify-between">
@@ -580,7 +583,7 @@ export default function ReceptionDashboard() {
               </p>
             </div>
           </div>
-        </aside>
+        </aside> */}
 
         {/* Main Panel Content */}
         <main className="flex-1 p-6 max-w-[1600px] mx-auto w-full space-y-6 overflow-x-hidden">
@@ -836,6 +839,8 @@ export default function ReceptionDashboard() {
                     <th className="p-4">Patient Parameters</th>
                     <th className="p-4">Assigned Doctor</th>
                     <th className="p-4">Workflow Status</th>
+                    <th className="p-4">Fees & Paymode</th>
+
                     <th className="p-4">Billing Status</th>
                     <th className="p-4 text-right">Operations Target</th>
                   </tr>
@@ -851,7 +856,7 @@ export default function ReceptionDashboard() {
                           <div>
                             <p className="font-bold">{appt.patientName}</p>
                             <p className="text-[11px] text-slate-700 mt-0.5">
-                              {appt.patientEmail}
+                              {appt.patientPhone}
                               {/* Yrs • {appt.user.gender} •{" "}
                               {appt.user.phone} */}
                             </p>
@@ -899,10 +904,20 @@ export default function ReceptionDashboard() {
                             {appt.status}
                           </span>
                         </td>
+                        {/* yaha app muje fees aur paymode dikhana hai app is hisab se suggest karo */}
                         <td className="p-4">
                           <p className="font-semibold">
-                            ₹{appt.consultationFees}
+                            {appt.fees ? appt.fees.toLocaleString() : "N/A"} ₹
+                            <br />
+                            <span className="text-[10px] text-slate-500 ml-2 ">
+                              {appt.paymode ? appt.paymode : ""}
+                            </span>
                           </p>
+                        </td>
+                        <td className="p-4">
+                          {/* <p className="font-semibold">
+                            ₹{appt.consultationFees}
+                          </p> */}
                           <span
                             className={`inline-flex items-center text-[9px] uppercase font-bold tracking-wider ${appt.paymentStatus === "paid" ? "text-emerald-500" : "text-rose-500"}`}
                           >
@@ -912,7 +927,7 @@ export default function ReceptionDashboard() {
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
-                              onClick={() => handleAssignClick()}
+                              onClick={() => handleAssignClick(appt._id)}
                               className="px-2.5 py-1 rounded-md font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all cursor-pointer"
                             >
                               Assign Payment
@@ -922,7 +937,7 @@ export default function ReceptionDashboard() {
                             <AssignPaymentModal
                               isOpen={isModalOpen}
                               onClose={() => setIsModalOpen(false)}
-                              id={appt._id}
+                              id={ids}
                               // guestData={selectedGuest}
                               // onSave={handleSavePayment}
                             />
