@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 // import { doctorLogin } from "../services/receptionService";
 import { useLocation } from "react-router-dom";
+// import PrescriptionModal from './PrescriptionModal';
+import PrescriptionModal from "./components/PrescriptionModal";
 
 const MOCK_DOCTOR = {
   _id: null,
@@ -50,7 +52,7 @@ export default function DoctorDashboard() {
   const [doctorAvailability, setDoctorAvailability] = useState(
     MOCK_DOCTOR.availability,
   );
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
   const doctorId = new URLSearchParams(location.search).get("doctorId");
   console.log("Extracted doctorId from URL:", doctorId);
@@ -162,6 +164,12 @@ export default function DoctorDashboard() {
         {error}
       </p>
     );
+
+  const handleMedicalClick = () => {
+    // setSelectedPatient(patient);
+    // alert("rohit");
+    setIsModalOpen(true);
+  };
 
   return (
     <div
@@ -388,10 +396,6 @@ export default function DoctorDashboard() {
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                           {ap.patientName || ap.user?.name}
                           {/* FIX 3: Optional Chaining (?.) का उपयोग किया ताकि डेटा न होने पर क्रैश न हो */}
-                          <span className="text-xs font-normal text-slate-400">
-                            ({ap.user?.age || "N/A"} yrs •{" "}
-                            {ap.user?.gender || "N/A"})
-                          </span>
                         </h4>
                         <div className="text-xs text-slate-500 dark:text-slate-400 space-y-0.5">
                           <p>
@@ -425,7 +429,16 @@ export default function DoctorDashboard() {
                         }`}
                       >
                         {ap.status}
-                      </span>
+                      </span>{" "}
+                      <br />
+                      <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                        <button
+                          className="px-3 py-1.5 bg-green-500 text-white rounded-lg cursor-pointer text-xs font-medium"
+                          onClick={handleMedicalClick}
+                        >
+                          Medical
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -575,6 +588,13 @@ export default function DoctorDashboard() {
             </div>
           </div>
         </div>
+        {/* पॉपअप मॉडल को यहाँ रेंडर करें */}
+        <PrescriptionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          // patient={selectedPatient}
+          // onSubmit={handlePrescriptionSubmit}
+        />
       </main>
     </div>
   );
