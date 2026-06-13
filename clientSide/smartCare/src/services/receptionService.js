@@ -202,3 +202,35 @@ export const updateAppointmentStatus = async (appointmentId, payload) => {
 };
 
 
+
+export const createPrescription = async (prescriptionData) => {
+  try {
+    const response = await API.post(
+      "/prescription/create",
+      prescriptionData
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log("Prescription API Error:", error);
+
+    throw (
+      error.response?.data || {
+        success: false,
+        message: "Something went wrong",
+      }
+    );
+  }
+};
+
+export const getPrescriptions = async () => {
+  try {
+    const response = await API.get("/prescription/all"); // अपना route डालो
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+

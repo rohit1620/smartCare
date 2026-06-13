@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPrescription } from "../../services/receptionService";
 
 const PrescriptionModal = ({
   isOpen,
@@ -55,20 +56,57 @@ const PrescriptionModal = ({
   };
 
   // फॉर्म सबमिट करने पर
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const prescriptionData = {
-      appointmentId: patient.id, // या patient._id
-      patientName: patient.name,
-      status: status,
-      clinicalNotes: clinicalNotes,
-      medicines: medicines,
-    };
 
-    onSubmit(prescriptionData); // पैरेंट कंपोनेंट (Dashboard) को डेटा भेजें
-    onClose(); // मॉडल बंद करें
+  const patient1 = {
+    doctorId: "6a1fea152b88d7343271e4a6",
+    doctorName: "rohit",
+    patientId: "6a1fea152b88d7343271e4a6",
+    patientName: "raju",
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    try {
+      const prescriptionData = {
+        doctorId: patient1.doctorId,
+        doctorName: patient1.doctorName,
+
+        patientId: patient1.patientId,
+        patientName: patient1.patientName,
+
+        appointmentStatus: "COMPLETED",
+
+        clinicalNotes,
+
+        medicines,
+      };
+
+      console.log("Sending Data:", prescriptionData);
+
+      const result = await createPrescription(prescriptionData);
+
+      console.log(result);
+
+      if (result.success) {
+        alert("Prescription Created Successfully");
+
+        onClose();
+
+        // अगर parent refresh करना है
+        if (onSubmit) {
+          onSubmit(result.data);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+
+      alert(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Prescription creation failed",
+      );
+    }
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 overflow-y-auto">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col animate-fadeIn">

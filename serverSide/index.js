@@ -6,7 +6,8 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoute.js';
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
-import prescriptionRoutes from './models/prescriptionSchema.js';
+import prescriptionRoute from "./routes/prescriptionRoute.js"
+
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use("/api/appointments",
   appointmentRoutes
 );
 app.use("/api/doctors", doctorRoutes);
-app.use("/api/prescription",prescriptionRoutes)
+app.use("/api/prescription",prescriptionRoute)
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });

@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { getPrescriptions } from "../services/receptionService";
 import {
   Pill,
   Search,
@@ -123,11 +124,9 @@ const MOCK_PRESCRIPTIONS_FROM_DOCTOR = [
 
 export default function MedicalDashboard() {
   // Local state for tracking orders and pipelines
-  const [prescriptions, setPrescriptions] = useState(
-    MOCK_PRESCRIPTIONS_FROM_DOCTOR,
-  );
+  const [prescriptions, setPrescriptions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("pending"); // Default to pending queues
+  const [statusFilter, setStatusFilter] = useState("all"); // Default to pending queues
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
   // Counters for Pharmacy Stats Card Matrix
@@ -146,9 +145,9 @@ export default function MedicalDashboard() {
   const filteredPrescriptions = useMemo(() => {
     return prescriptions.filter((p) => {
       const matchesStatus =
-        statusFilter === "all" || p.dispenseStatus === statusFilter;
+        statusFilter === "all" || p.appointmentStatus === statusFilter;
       const matchesSearch =
-        p.patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.patient.phone.includes(searchTerm) ||
         p._id.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesSearch;
@@ -167,6 +166,24 @@ export default function MedicalDashboard() {
         ...prev,
         dispenseStatus: "dispensed",
       }));
+    }
+  };
+
+  useEffect(() => {
+    fetchPrescriptions();
+  }, []);
+
+  const fetchPrescriptions = async () => {
+    try {
+      const result = await getPrescriptions();
+
+      console.log(result);
+
+      if (result.success) {
+        setPrescriptions(result.data);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -283,27 +300,27 @@ export default function MedicalDashboard() {
                   className={`bg-white border p-4 rounded-xl shadow-sm cursor-pointer transition-all border-l-4 flex flex-col gap-2 ${selectedPrescription?._id === p._id ? "ring-2 ring-emerald-500 border-transparent" : "border-slate-200 hover:border-slate-300"}`}
                   style={{
                     borderLeftColor:
-                      p.dispenseStatus === "pending" ? "#f59e0b" : "#10b981",
+                      p.appointmentStatus === "pending" ? "#f59e0b" : "#10b981",
                   }}
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">
-                        {p.patient.name}
+                        {p.patientName}
                       </h4>
-                      <p className="text-xs text-slate-500">
+                      {/* <p className="text-xs text-slate-500">
                         {p.patient.gender}, {p.patient.age} Yrs •{" "}
                         {p.patient.bloodGroup}
-                      </p>
+                      </p> */}
                     </div>
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${p.dispenseStatus === "pending" ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${p.appointmentStatus === "pending" ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}
                     >
-                      {p.dispenseStatus}
+                      {p.appointmentStatus}
                     </span>
                   </div>
                   <div className="pt-2 border-t border-dashed border-slate-100 flex justify-between items-center text-[11px] text-slate-400 font-medium">
-                    <span>By: {p.doctor.name}</span>
+                    <span>By: {p.doctorName}</span>
                     <span>
                       {new Date(p.completedAt).toLocaleTimeString([], {
                         hour: "2-digit",
