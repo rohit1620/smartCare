@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { createPrescription } from "../../services/receptionService";
+import { updateAppointmentStatus } from "../../services/receptionService";
 
 const PrescriptionModal = ({
   isOpen,
   onClose,
   patient = "rohit",
   onSubmit,
+  med,
 }) => {
   if (!isOpen) return null;
 
@@ -84,6 +86,8 @@ const PrescriptionModal = ({
       console.log("Sending Data:", prescriptionData);
 
       const result = await createPrescription(prescriptionData);
+      const id = med;
+      await updateAppointmentStatus(id, { status: "completed" });
 
       console.log(result);
 

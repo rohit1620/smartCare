@@ -375,10 +375,10 @@ export default function MedicalDashboard() {
                       Patient Details
                     </p>
                     <p className="font-bold text-slate-800 mt-0.5">
-                      {selectedPrescription.patient.name}
+                      {selectedPrescription.patientName}
                     </p>
                     <p className="text-slate-500">
-                      {selectedPrescription.patient.phone}
+                      {selectedPrescription.phone}
                     </p>
                   </div>
                   <div className="text-right">
@@ -386,11 +386,11 @@ export default function MedicalDashboard() {
                       Prescribed Consultant
                     </p>
                     <p className="font-bold text-slate-800 mt-0.5">
-                      {selectedPrescription.doctor.name}
+                      {selectedPrescription.doctorName}
                     </p>
-                    <p className="text-indigo-600 font-semibold">
+                    {/* <p className="text-indigo-600 font-semibold">
                       {selectedPrescription.doctor.department}
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
@@ -415,12 +415,12 @@ export default function MedicalDashboard() {
                           <tr key={idx} className="hover:bg-slate-50/50">
                             <td className="p-3 font-bold text-slate-800">
                               <span className="inline-block w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2" />
-                              {med.name}
+                              {med.drugName}
                             </td>
                             <td className="p-3 text-slate-600">
-                              <div>{med.dosage}</div>
+                              <div>{med.form}/</div>
                               <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.2 rounded font-semibold">
-                                {med.duration}
+                                {med.frequency}
                               </span>
                             </td>
                             <td className="p-3 text-center font-bold text-slate-900">
