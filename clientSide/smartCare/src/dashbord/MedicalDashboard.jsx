@@ -130,6 +130,7 @@ export default function MedicalDashboard() {
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
   // Counters for Pharmacy Stats Card Matrix
+
   const stats = useMemo(() => {
     return {
       totalReceived: prescriptions.length,
@@ -148,7 +149,7 @@ export default function MedicalDashboard() {
         statusFilter === "all" || p.appointmentStatus === statusFilter;
       const matchesSearch =
         p.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.patient.phone.includes(searchTerm) ||
+        p.patientPhone.includes(searchTerm) ||
         p._id.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesSearch;
     });
@@ -161,6 +162,7 @@ export default function MedicalDashboard() {
         p._id === id ? { ...p, dispenseStatus: "dispensed" } : p,
       ),
     );
+
     if (selectedPrescription && selectedPrescription._id === id) {
       setSelectedPrescription((prev) => ({
         ...prev,
@@ -308,15 +310,15 @@ export default function MedicalDashboard() {
                       <h4 className="text-sm font-bold text-slate-900">
                         {p.patientName}
                       </h4>
-                      {/* <p className="text-xs text-slate-500">
-                        {p.patient.gender}, {p.patient.age} Yrs •{" "}
-                        {p.patient.bloodGroup}
-                      </p> */}
+                      <p className="text-xs text-slate-500">
+                        {p.patientPhone},|| {p.patientEmail} <br />
+                        {p.department}
+                      </p>
                     </div>
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${p.appointmentStatus === "pending" ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${p.dispenseStatus === "pending" ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}
                     >
-                      {p.appointmentStatus}
+                      {p.dispenseStatus}
                     </span>
                   </div>
                   <div className="pt-2 border-t border-dashed border-slate-100 flex justify-between items-center text-[11px] text-slate-400 font-medium">
@@ -351,10 +353,10 @@ export default function MedicalDashboard() {
                 <div className="bg-slate-900 text-white p-5 flex justify-between items-center">
                   <div>
                     <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400">
-                      Rx Digital Token
+                      PatientName
                     </span>
                     <h3 className="text-base font-bold">
-                      {selectedPrescription._id}
+                      {selectedPrescription.patientName}
                     </h3>
                   </div>
                   <div className="flex gap-2">
@@ -371,26 +373,27 @@ export default function MedicalDashboard() {
                 {/* Patient Profile Snapshot */}
                 <div className="p-5 border-b border-slate-100 bg-slate-50/50 grid grid-cols-2 gap-4 text-xs">
                   <div>
-                    <p className="text-slate-400 font-medium">
+                    <p className="text-slate-600 font-medium">
                       Patient Details
                     </p>
                     <p className="font-bold text-slate-800 mt-0.5">
                       {selectedPrescription.patientName}
                     </p>
                     <p className="text-slate-500">
-                      {selectedPrescription.phone}
+                      {selectedPrescription.patientPhone} <br />
+                      {selectedPrescription.patientEmail}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-slate-400 font-medium">
+                    <p className="text-slate-600 font-medium">
                       Prescribed Consultant
                     </p>
                     <p className="font-bold text-slate-800 mt-0.5">
                       {selectedPrescription.doctorName}
                     </p>
-                    {/* <p className="text-indigo-600 font-semibold">
-                      {selectedPrescription.doctor.department}
-                    </p> */}
+                    <p className="text-indigo-600 font-semibold">
+                      {selectedPrescription.department}
+                    </p>
                   </div>
                 </div>
 
@@ -435,12 +438,15 @@ export default function MedicalDashboard() {
 
                 {/* Call to Action Footer Panel */}
                 <div className="p-5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                  <div className="text-xs text-slate-400 font-medium">
-                    Log Time:{" "}
-                    {new Date(
-                      selectedPrescription.completedAt,
-                    ).toLocaleDateString()}
+                  <div className="text-lg text-orange-400 font-medium">
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => setSelectedPrescription(null)}
+                    >
+                      Cancel
+                    </button>
                   </div>
+
                   {selectedPrescription.dispenseStatus === "pending" ? (
                     <button
                       onClick={() =>

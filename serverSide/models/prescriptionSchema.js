@@ -7,6 +7,11 @@ const PrescriptionSchema = new mongoose.Schema({
     required: [true, 'Doctor name is required'],
     trim: true
   },
+  department:{
+    type:String,
+    required:true
+  },
+
   // अगर आपके पास डॉक्टर की ID भी है, तो इसे रख सकते हैं (Optional but Recommended)
   doctorId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,11 +30,22 @@ const PrescriptionSchema = new mongoose.Schema({
     trim: true
   },
 
+patientEmail:{
+  type:String,
+  required:true
+},
+patientPhone:{
+  type:String,
+  required:true
+},
+
+
+
   // 3. Appointment & Consultation Details
-  appointmentStatus: {
+  dispenseStatus: {
     type: String,
-    enum: ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'],
-    default: 'COMPLETED' // जैसा कि आपके UI में रिकमेंडेड है
+    enum: ['pending', 'dispensed'],
+    default: 'pending' // जैसा कि आपके UI में रिकमेंडेड है
   },
   clinicalNotes: {
     type: String,

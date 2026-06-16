@@ -39,7 +39,7 @@ const MOCK_DOCTOR = {
 };
 
 export default function DoctorDashboard() {
-  const [medId, setMedId] = useState("");
+  const [medId, setMedId] = useState({});
   const [darkMode, setDarkMode] = useState(false);
   const [MOCK_APPOINTMENTS, setMOCK_APPOINTMENTS] = useState([]);
   const [activeTab, setActiveTab] = useState("appointments");
@@ -166,10 +166,10 @@ export default function DoctorDashboard() {
       </p>
     );
 
-  const handleMedicalClick = (id) => {
+  const handleMedicalClick = (obj) => {
     // setSelectedPatient(patient);
     // alert("rohit");
-    setMedId(id);
+    setMedId(obj);
     setIsModalOpen(true);
   };
 
@@ -436,7 +436,7 @@ export default function DoctorDashboard() {
                       <div className="flex items-center gap-2 mt-2 sm:mt-0">
                         <button
                           className="px-3 py-1.5 bg-green-500 text-white rounded-lg cursor-pointer text-xs font-medium"
-                          onClick={() => handleMedicalClick(ap._id)}
+                          onClick={() => handleMedicalClick(ap)}
                         >
                           Medical
                         </button>

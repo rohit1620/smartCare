@@ -11,7 +11,10 @@ export const createPrescription = async (req, res) => {
       doctorId, 
       patientId, 
       patientName, 
-      appointmentStatus, 
+      patientEmail,
+      patientPhone,
+      department,
+      dispenseStatus, 
       clinicalNotes, 
       medicines 
     } = req.body;
@@ -30,7 +33,10 @@ export const createPrescription = async (req, res) => {
       doctorId,
       patientId,
       patientName,
-      appointmentStatus: appointmentStatus || 'COMPLETED', // अगर फ्रंटएंड से नहीं आया तो डिफ़ॉल्ट COMPLETED
+      patientEmail,
+      patientPhone,
+      department,
+      dispenseStatus: dispenseStatus || 'pending', // अगर फ्रंटएंड से नहीं आया तो डिफ़ॉल्ट COMPLETED
       clinicalNotes,
       medicines
     });

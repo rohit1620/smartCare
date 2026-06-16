@@ -70,13 +70,14 @@ const PrescriptionModal = ({
 
     try {
       const prescriptionData = {
-        doctorId: patient1.doctorId,
-        doctorName: patient1.doctorName,
-
-        patientId: patient1.patientId,
-        patientName: patient1.patientName,
-
-        appointmentStatus: "COMPLETED",
+        doctorId: med.assignedDoctor._id,
+        doctorName: med.assignedDoctorName,
+        patientId: med._id,
+        patientName: med.patientName,
+        department: med.department,
+        patientEmail: med.patientEmail,
+        patientPhone: med.patientPhone,
+        dispenseStatus: "pending",
 
         clinicalNotes,
 
@@ -86,7 +87,8 @@ const PrescriptionModal = ({
       console.log("Sending Data:", prescriptionData);
 
       const result = await createPrescription(prescriptionData);
-      const id = med;
+      const id = med._id;
+      console.log("med med", med);
       await updateAppointmentStatus(id, { status: "completed" });
 
       console.log(result);
