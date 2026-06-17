@@ -13,6 +13,7 @@ import UserDashboard from "../dashbord/UserDashboard";
 import MedicalDashboard from "../dashbord/MedicalDashboard";
 import AdminDoctorManager from "../dashbord/AdminDoctorManager";
 import LoginForm from "../dashbord/LoginForm";
+import AdminDashboard from "../dashbord/AdminDashboard";
 
 const AllPages = () => {
   return (
@@ -32,6 +33,21 @@ const AllPages = () => {
         <Route path="/dashboard/admindoctor" element={<AdminDoctorManager />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />}>
+          <Route
+            path="/dashboard/admin/reception"
+            element={<ReceptionDashboard />}
+          />
+          <Route path="/dashboard/admin/doctor" element={<DoctorDashboard />} />
+          <Route
+            path="/dashboard/admin/medical"
+            element={<MedicalDashboard />}
+          />
+          <Route
+            path="/dashboard/admin/admindoctor"
+            element={<AdminDoctorManager />}
+          />
+        </Route>
       </Routes>
     </>
   );

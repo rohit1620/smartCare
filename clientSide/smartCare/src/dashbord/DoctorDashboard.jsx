@@ -20,9 +20,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 // import { doctorLogin } from "../services/receptionService";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 // import PrescriptionModal from './PrescriptionModal';
 import PrescriptionModal from "./components/PrescriptionModal";
+import DoctorCardList from "./components/DoctorCardList";
 
 const MOCK_DOCTOR = {
   _id: null,
@@ -55,11 +56,20 @@ export default function DoctorDashboard() {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
-  const doctorId = new URLSearchParams(location.search).get("doctorId");
+  // const doctorId = new URLSearchParams(location.search).get("doctorId");
+  const [searchParams] = useSearchParams(); // URL ट्रैक करने के लिए
+  const doctorId = searchParams.get("doctorId"); // URL से ID निकालना
   console.log("Extracted doctorId from URL:", doctorId);
 
   // invailid doctorId hone par bhi dashboard khul raha tha, isliye ek check lagaya hai ki agar doctorId milta hai to hi MOCK_DOCTOR ka _id set karega. Agar doctorId nahi milega to dashboard khulega lekin appointments load nahi honge, aur console me doctorId null ya undefined dikhayega, jisse pata chalega ki URL me doctorId missing hai.
   // okay ye to tik hai lakin doctorId kyu nhi mil rhi hai login ke badd?
+  // 2. जब भी doctorId बदले, ये useEffect चलेगा
+  useEffect(() => {
+    if (doctorId) {
+      console.log("नया डॉक्टर ID मिला:", doctorId);
+      // यहाँ अपनी API कॉल करें: fetchAppointments(doctorId)
+    }
+  }, [doctorId]); // [doctorId] यहाँ डालना ज़रूरी है
 
   useEffect(() => {
     if (doctorId) {
@@ -159,11 +169,14 @@ export default function DoctorDashboard() {
 
   if (loading)
     return <p className="p-8 text-center text-sm">Loading Dashboard Data...</p>;
+
+  if (!doctorId) return <DoctorCardList />;
   if (error)
     return (
       <p className="p-8 text-center text-sm" style={{ color: "red" }}>
         {error}
       </p>
+      // <DoctorCardList />
     );
 
   const handleMedicalClick = (obj) => {
