@@ -212,7 +212,7 @@ export default function ReceptionDashboard() {
             confirmedAppointments: data.confirmedAppointments,
             completedAppointments: data.completedAppointments,
             cancelledAppointments: data.cancelledAppointments,
-            totalDoctors: 12,
+            totalDoctors: 3,
             totalPatients: 85,
           },
           todayAppointmentList: data.appointments,
@@ -461,7 +461,7 @@ export default function ReceptionDashboard() {
     { name: "Doctors", value: stats.totalDoctors, color: "#6366f1" },
     {
       name: "Registered Patients",
-      value: stats.totalPatients,
+      value: stats.totalAppointments,
       color: "#3b82f6",
     },
   ];
@@ -650,13 +650,12 @@ export default function ReceptionDashboard() {
             >
               <div className="flex items-center justify-between text-indigo-500">
                 <span className="text-xs font-bold uppercase tracking-wider">
-                  Active Staff
+                  Completed
                 </span>
                 <Users size={16} />
               </div>
               <p className="text-2xl font-bold mt-2 text-indigo-500">
-                {stats.totalDoctors}{" "}
-                <span className="text-xs font-normal text-slate-400">Docs</span>
+                {stats.confirmedAppointments}
               </p>
             </div>
           </div>

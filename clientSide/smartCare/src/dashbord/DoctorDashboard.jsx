@@ -55,7 +55,7 @@ export default function DoctorDashboard() {
     MOCK_DOCTOR.availability,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const location = useLocation();
+  // const location = useLocation();
   // const doctorId = new URLSearchParams(location.search).get("doctorId");
   const [searchParams] = useSearchParams(); // URL ट्रैक करने के लिए
   const doctorId = searchParams.get("doctorId"); // URL से ID निकालना
@@ -104,7 +104,7 @@ export default function DoctorDashboard() {
     };
 
     getAppointments();
-  }, [statusFilter]); // statusFilter बदलने पर दोबारा फेच करें
+  }, [doctorId, statusFilter]); // statusFilter बदलने पर दोबारा फेच करें
 
   // FIX 1: dependency array में MOCK_APPOINTMENTS को जोड़ा ताकि डेटा आते ही यह दोबारा चले
   const statistics = useMemo(() => {
@@ -171,13 +171,13 @@ export default function DoctorDashboard() {
     return <p className="p-8 text-center text-sm">Loading Dashboard Data...</p>;
 
   if (!doctorId) return <DoctorCardList />;
-  if (error)
-    return (
-      <p className="p-8 text-center text-sm" style={{ color: "red" }}>
-        {error}
-      </p>
-      // <DoctorCardList />
-    );
+  // if (error)
+  //   return (
+  //     <p className="p-8 text-center text-sm" style={{ color: "red" }}>
+  //       {error}
+  //     </p>
+  //     // <DoctorCardList />
+  //   );
 
   const handleMedicalClick = (obj) => {
     // setSelectedPatient(patient);
@@ -189,6 +189,7 @@ export default function DoctorDashboard() {
   return (
     <div
       className={`${darkMode ? "dark bg-slate-950 text-slate-50" : "bg-slate-50 text-slate-900"} min-h-screen transition-colors duration-300 font-sans`}
+      // key={location.search}
     >
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-3">

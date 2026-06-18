@@ -18,7 +18,7 @@ const navLinks = [
   "Appointments",
   "Services",
   "Contact",
-  "auth",
+  "Login",
 ];
 
 export default function HospitalNavbar() {

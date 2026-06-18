@@ -16,14 +16,14 @@ const HospitalLogin = () => {
 
   // High-End Role Mapping Configuration
   const roles = [
-    {
-      id: "patient",
-      label: "PATIENT",
-      icon: "👤",
-      color: "blue",
-      ringColor: "focus:ring-blue-500",
-      activeBg: "bg-blue-950/40 border-blue-500 shadow-blue-900/40",
-    },
+    // {
+    //   id: "patient",
+    //   label: "PATIENT",
+    //   icon: "👤",
+    //   color: "blue",
+    //   ringColor: "focus:ring-blue-500",
+    //   activeBg: "bg-blue-950/40 border-blue-500 shadow-blue-900/40",
+    // },
     {
       id: "reception",
       label: "RECEPTION",
@@ -85,18 +85,22 @@ const HospitalLogin = () => {
       // Simulating production network request delay
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      const loginResponse = await doctorLogin({
-        email: formData.email,
-        password: formData.password,
-      });
-
+      if (formData.role === "doctor") {
+        const loginResponse = await doctorLogin({
+          email: formData.email,
+          password: formData.password,
+        });
+        navigate(
+          `/dashboard/${formData.role}?doctorId=${loginResponse.doctor.id}`,
+        );
+      }
       // Doctor login successful hone ke baad
-      navigate(`/dashboard/doctor?doctorId=${loginResponse.id}`);
+      // navigate(`/dashboard/doctor?doctorId=${loginResponse.id}`);
 
       if (
         formData.role === "admin" &&
-        formData.email !== "admin@example.com" &&
-        formData.password !== "admin123"
+        formData.email !== "admin@gmail.com" &&
+        formData.password !== "1234567"
       ) {
         throw new Error("Invalid admin credentials.");
       }
@@ -106,26 +110,28 @@ const HospitalLogin = () => {
 
       if (
         formData.role === "reception" &&
-        formData.email !== "reception@example.com" &&
-        formData.password !== "reception123"
+        formData.email !== "reception@gmail.com" &&
+        formData.password !== "1234567"
       ) {
         throw new Error("Invalid reception credentials.");
       }
 
-      if (
-        formData.role === "patient" &&
-        formData.email !== "patient@example.com" &&
-        formData.password !== "patient123"
-      ) {
-        throw new Error("Invalid patient credentials.");
-      }
+      // if (
+      //   formData.role === "patient" &&
+      //   formData.email !== "patient@example.com" &&
+      //   formData.password !== "patient123"
+      // ) {
+      //   throw new Error("Invalid patient credentials.");
+      // }
 
       if (
         formData.role === "medical" &&
-        formData.email !== "medical@example.com" &&
-        formData.password !== "medical123"
+        formData.email !== "medical@gmail.com" &&
+        formData.password !== "1234567"
       ) {
         throw new Error("Invalid medical credentials.");
+      } else {
+        navigate(`/dashboard/${formData.role}`);
       }
 
       console.log("Authentication successful for routing:", formData);
@@ -134,9 +140,6 @@ const HospitalLogin = () => {
       console.log(
         "Navigating to dashboard with doctorId:",
         loginResponse.doctor.id,
-      );
-      navigate(
-        `/dashboard/${formData.role}?doctorId=${loginResponse.doctor.id}`,
       );
     } catch (err) {
       setError(err.message || "An unexpected error occurred during login.");
