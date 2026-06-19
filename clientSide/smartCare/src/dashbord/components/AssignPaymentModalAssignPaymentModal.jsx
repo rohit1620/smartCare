@@ -2,7 +2,14 @@ import React, { useState } from "react";
 // muje yaha updateAppoinmentStatus function jo receptionService file me hai use import karna hai app suggestion do
 import { updateAppointmentStatus } from "../../services/receptionService";
 
-const AssignPaymentModal = ({ isOpen, onClose, guestData, onSave, id }) => {
+const AssignPaymentModal = ({
+  isOpen,
+  onClose,
+  guestData,
+  onSave,
+  id,
+  // refreshData,
+}) => {
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("UPI");
   const [status, setStatus] = useState("Pending");
@@ -29,6 +36,7 @@ const AssignPaymentModal = ({ isOpen, onClose, guestData, onSave, id }) => {
         //   amount: amount,
         //   method: paymentMethod,
         // });
+        // refreshData();
       })
       .catch((err) => {
         console.error("Error updating status:", err);

@@ -830,3 +830,123 @@ await Appointment.countDocuments();
     }
 
 };
+
+<form className="relative z-10">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {/* Full Name */}
+                <InputField
+                  icon={User}
+                  type="text"
+                  placeholder="Enter your full name"
+                />
+
+                {/* Phone */}
+                <InputField
+                  icon={Phone}
+                  type="tel"
+                  placeholder="Enter phone number"
+                />
+
+                {/* Email */}
+                <InputField
+                  icon={Mail}
+                  type="email"
+                  placeholder="Enter email address"
+                />
+
+                {/* Gender */}
+                <SelectField
+                  placeholder="Select Gender"
+                  options={["Male", "Female", "Other"]}
+                />
+
+                {/* Age */}
+                <InputField icon={User} type="number" placeholder="Enter age" />
+
+                {/* Department */}
+                <SelectField
+                  placeholder="Select Department"
+                  options={[
+                    "Cardiology",
+                    "Neurology",
+                    "Orthopedics",
+                    "Pediatrics",
+                    "Dermatology",
+                  ]}
+                />
+
+                {/* Doctor */}
+                <SelectField
+                  placeholder="Select Doctor"
+                  options={[
+                    "Dr. Sarah Johnson",
+                    "Dr. Michael Lee",
+                    "Dr. Emily Watson",
+                  ]}
+                />
+
+                {/* Date */}
+                <InputField icon={CalendarDays} type="date" />
+
+                {/* Time */}
+                <SelectField
+                  placeholder="Select Time Slot"
+                  options={["10:00 AM", "11:30 AM", "02:00 PM", "04:30 PM"]}
+                />
+              </div>
+
+              {/* Symptoms */}
+              <div className="mt-5">
+                <textarea
+                  rows={5}
+                  placeholder="Describe symptoms or additional information"
+                  className="w-full rounded-2xl border border-white/10 bg-white/10 px-5 py-4 text-white outline-none backdrop-blur-xl transition-all duration-300 placeholder:text-slate-400 focus:border-cyan-400/40 focus:bg-white/15"
+                />
+              </div>
+
+              {/* Schedule Preview */}
+              <motion.div
+                whileHover={{
+                  y: -5,
+                }}
+                className="group relative mt-6 overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/30 p-5 backdrop-blur-2xl"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-blue-500/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                <div className="relative z-10 flex items-center justify-between gap-4">
+                  <div>
+                    <h5 className="text-lg font-semibold text-white">
+                      Dr. Sarah Johnson
+                    </h5>
+
+                    <p className="mt-1 text-sm text-slate-300">
+                      Tuesday • 04:30 PM
+                    </p>
+                  </div>
+
+                  <div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-medium text-emerald-200">
+                    Online Consultation
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Submit */}
+              <motion.button
+                whileHover={{
+                  scale: 1.03,
+                  y: -2,
+                }}
+                whileTap={{
+                  scale: 0.96,
+                }}
+                className="group relative mt-8 flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-5 font-semibold text-white shadow-2xl transition-all duration-300 hover:shadow-cyan-500/30"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Book Appointment
+                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+
+                {/* Shine */}
+                <div className="absolute -left-full top-0 h-full w-1/2 rotate-12 bg-white/20 blur-2xl transition-all duration-700 group-hover:left-[150%]" />
+              </motion.button>
+            </form>

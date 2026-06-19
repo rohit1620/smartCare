@@ -316,7 +316,7 @@ export default function ReceptionDashboard() {
     };
 
     fetchAppointments();
-  }, []);
+  }, [dashboardData]);
 
   // Backend Query/Filter States (Directly connects to your API controllers)
   const [searchFilter, setSearchFilter] = useState("");
@@ -937,6 +937,7 @@ export default function ReceptionDashboard() {
                               isOpen={isModalOpen}
                               onClose={() => setIsModalOpen(false)}
                               id={ids}
+                              // refreshData={fetchAppointments}
                               // guestData={selectedGuest}
                               // onSave={handleSavePayment}
                             />

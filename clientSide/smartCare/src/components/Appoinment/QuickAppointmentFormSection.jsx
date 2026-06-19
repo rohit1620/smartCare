@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -16,6 +16,8 @@ import {
   ArrowRight,
   ChevronDown,
 } from "lucide-react";
+import { bookAppointment } from "../../services/receptionService";
+import Swal from "sweetalert2";
 
 const floatingIcons = [
   {
@@ -63,6 +65,106 @@ const fadeUp = {
 };
 
 export default function QuickAppointmentFormSection() {
+  const [formData, setFormData] = useState({
+    patientName: "",
+    patientEmail: "",
+    patientPhone: "",
+    department: "",
+    assignedDoctorName: "",
+    appointmentDate: "",
+    timeSlot: "",
+    symptoms: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  // ======================================================
+  // Handle Change
+  // ======================================================
+
+  const handleChange = (e) => {
+    console.log(e.target.name, e.target.value);
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // ======================================================
+  // Handle Submit
+  // ======================================================
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      console.log("form data:", formData);
+
+      const response = await bookAppointment(formData);
+
+      // alert(response.message);
+
+      // 2. Alert ki jagah ye use karein
+      Swal.fire({
+        title: "Success!",
+        text: response.message,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      // Reset Form
+      setFormData({
+        patientName: "",
+        patientEmail: "",
+        patientPhone: "",
+        department: "",
+        assignedDoctorName: "",
+        appointmentDate: "",
+        timeSlot: "",
+        symptoms: "",
+      });
+    } catch (error) {
+      console.log(error);
+
+      // alert(error.response?.data?.message || "Something went wrong");
+      // Agar koi error aata hai (network error ya server side error)
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message,
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <svg
+          className="animate-spin h-10 w-10 text-teal-500"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          ></path>
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <section className="relative overflow-hidden bg-slate-950 py-24">
       {/* Background Glow */}
@@ -270,127 +372,141 @@ export default function QuickAppointmentFormSection() {
         >
           <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-2xl">
             {/* Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-transparent to-blue-500/10" />
+            {/* <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-transparent to-blue-500/10" /> */}
 
             {/* Form */}
-            <form className="relative z-10">
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                {/* Full Name */}
-                <InputField
-                  icon={User}
-                  type="text"
-                  placeholder="Enter your full name"
-                />
 
-                {/* Phone */}
-                <InputField
-                  icon={Phone}
-                  type="tel"
-                  placeholder="Enter phone number"
-                />
-
-                {/* Email */}
-                <InputField
-                  icon={Mail}
-                  type="email"
-                  placeholder="Enter email address"
-                />
-
-                {/* Gender */}
-                <SelectField
-                  placeholder="Select Gender"
-                  options={["Male", "Female", "Other"]}
-                />
-
-                {/* Age */}
-                <InputField icon={User} type="number" placeholder="Enter age" />
-
-                {/* Department */}
-                <SelectField
-                  placeholder="Select Department"
-                  options={[
-                    "Cardiology",
-                    "Neurology",
-                    "Orthopedics",
-                    "Pediatrics",
-                    "Dermatology",
-                  ]}
-                />
-
-                {/* Doctor */}
-                <SelectField
-                  placeholder="Select Doctor"
-                  options={[
-                    "Dr. Sarah Johnson",
-                    "Dr. Michael Lee",
-                    "Dr. Emily Watson",
-                  ]}
-                />
-
-                {/* Date */}
-                <InputField icon={CalendarDays} type="date" />
-
-                {/* Time */}
-                <SelectField
-                  placeholder="Select Time Slot"
-                  options={["10:00 AM", "11:30 AM", "02:00 PM", "04:30 PM"]}
-                />
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {/* Row 1 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="patientName"
+                    value={formData.patientName}
+                    onChange={handleChange}
+                    placeholder="Full Name"
+                    className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-5 text-white placeholder-slate-400 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
+                  />
+                </div>
+                <div className="relative">
+                  <input
+                    type="tel"
+                    name="patientPhone"
+                    value={formData.patientPhone}
+                    onChange={handleChange}
+                    placeholder="Phone Number"
+                    className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-5 text-white placeholder-slate-400 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
+                  />
+                </div>
               </div>
 
-              {/* Symptoms */}
-              <div className="mt-5">
-                <textarea
-                  rows={5}
-                  placeholder="Describe symptoms or additional information"
-                  className="w-full rounded-2xl border border-white/10 bg-white/10 px-5 py-4 text-white outline-none backdrop-blur-xl transition-all duration-300 placeholder:text-slate-400 focus:border-cyan-400/40 focus:bg-white/15"
-                />
+              {/* Row 2 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div className="relative">
+                  <input
+                    type="email"
+                    name="patientEmail"
+                    value={formData.patientEmail}
+                    onChange={handleChange}
+                    placeholder="Email Address"
+                    className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-5 text-white placeholder-slate-400 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
+                  />
+                </div>
+                <div className="relative">
+                  <select
+                    className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-300"
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                  >
+                    <option>Select Department</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Neurology">Neurology</option>
+                    <option value="Orthopedics">Orthopedics</option>
+                    <option value="Dental Care">Dental Care</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Schedule Preview */}
-              <motion.div
-                whileHover={{
-                  y: -5,
-                }}
-                className="group relative mt-6 overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/30 p-5 backdrop-blur-2xl"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-blue-500/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              {/* Row 3 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div className="relative">
+                  <select
+                    className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-5 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-300"
+                    name="assignedDoctorName"
+                    value={formData.assignedDoctorName}
+                    onChange={handleChange}
+                  >
+                    <option>Select Doctor</option>
+                    <option value="Dr. Michael Lee (Neurologist)">
+                      Dr. Michael Lee (Neurologist)
+                    </option>
+                    <option value="Dr. Sarah Johnson (Cardiologist)">
+                      Dr. Sarah Johnson (Cardiologist)
+                    </option>
+                    <option value="Dr. David Miller (Orthopedic)">
+                      Dr. David Miller (Orthopedic)
+                    </option>
+                  </select>
+                </div>
 
-                <div className="relative z-10 flex items-center justify-between gap-4">
-                  <div>
-                    <h5 className="text-lg font-semibold text-white">
-                      Dr. Sarah Johnson
-                    </h5>
-
-                    <p className="mt-1 text-sm text-slate-300">
-                      Tuesday • 04:30 PM
-                    </p>
-                  </div>
-
-                  <div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-medium text-emerald-200">
-                    Online Consultation
+                <div className="grid grid-cols-2 gap-5">
+                  <input
+                    type="date"
+                    name="appointmentDate"
+                    value={formData.appointmentDate}
+                    onChange={handleChange}
+                    className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-4 text-slate-300 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
+                  />
+                  <div className="relative">
+                    <select
+                      className="w-full h-14 rounded-2xl border border-slate-700 bg-slate-800 px-4 outline-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20 text-slate-300"
+                      name="timeSlot"
+                      value={formData.timeSlot}
+                      onChange={handleChange}
+                    >
+                      <option>Time</option>
+                      <option>09:00 AM</option>
+                      <option>09:15 AM</option>
+                      <option>09:30 AM</option>
+                      <option>09:45 AM</option>
+                      <option>10:00 AM</option>
+                      <option>10:15 AM</option>
+                      <option>10:30 AM</option>
+                      <option>10:45 AM</option>
+                      <option>11:00 AM</option>
+                      <option>11:15 AM</option>
+                      <option>11:30 AM</option>
+                      <option>11:45 AM</option>
+                    </select>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Submit */}
-              <motion.button
-                whileHover={{
-                  scale: 1.03,
-                  y: -2,
-                }}
-                whileTap={{
-                  scale: 0.96,
-                }}
-                className="group relative mt-8 flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-5 font-semibold text-white shadow-2xl transition-all duration-300 hover:shadow-cyan-500/30"
+              {/* Message */}
+              <div>
+                <textarea
+                  rows="5"
+                  placeholder="Describe Symptoms / Message"
+                  className="w-full rounded-3xl border border-slate-700 bg-slate-800 px-5 py-4 text-white placeholder-slate-400 outline-none resize-none transition-all duration-300 focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/20"
+                  name="symptoms"
+                  value={formData.symptoms}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
+
+              {/* CTA */}
+              <button
+                type="submit"
+                className="group relative overflow-hidden w-full h-16 rounded-2xl bg-gradient-to-r from-[#0F766E] via-[#14B8A6] to-[#06B6D4] text-white font-semibold text-lg shadow-[0_15px_40px_rgba(20,184,166,0.35)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(20,184,166,0.45)]"
               >
-                <span className="relative z-10 flex items-center gap-2">
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <span className="relative flex items-center justify-center gap-3">
                   Book Appointment
-                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
-
-                {/* Shine */}
-                <div className="absolute -left-full top-0 h-full w-1/2 rotate-12 bg-white/20 blur-2xl transition-all duration-700 group-hover:left-[150%]" />
-              </motion.button>
+              </button>
             </form>
           </div>
         </motion.div>

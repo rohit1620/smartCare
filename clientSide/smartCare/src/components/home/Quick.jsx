@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { bookAppointment } from "../../services/receptionService";
 
+import Swal from "sweetalert2";
+
 export default function QuickAppointmentSection() {
   const [formData, setFormData] = useState({
     patientName: "",
@@ -54,7 +56,15 @@ export default function QuickAppointmentSection() {
 
       const response = await bookAppointment(formData);
 
-      alert(response.message);
+      // alert(response.message);
+
+      // 2. Alert ki jagah ye use karein
+      Swal.fire({
+        title: "Success!",
+        text: response.message,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
 
       // Reset Form
       setFormData({
@@ -70,7 +80,14 @@ export default function QuickAppointmentSection() {
     } catch (error) {
       console.log(error);
 
-      alert(error.response?.data?.message || "Something went wrong");
+      // alert(error.response?.data?.message || "Something went wrong");
+      // Agar koi error aata hai (network error ya server side error)
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message,
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
     } finally {
       setLoading(false);
     }

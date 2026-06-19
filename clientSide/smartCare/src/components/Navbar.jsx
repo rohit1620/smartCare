@@ -9,6 +9,7 @@ import {
   HeartPulse,
   ChevronRight,
 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const navLinks = [
   "Home",
@@ -117,7 +118,17 @@ export default function HospitalNavbar() {
               </button> */}
 
               {/* Emergency */}
-              <button className="group relative overflow-hidden px-5 py-3 rounded-xl border border-red-200 bg-red-50 text-red-600 font-semibold transition-all duration-500 hover:shadow-lg hover:-translate-y-0.5 lg:cursor-pointer">
+              <button
+                className="group relative overflow-hidden px-5 py-3 rounded-xl border border-red-200 bg-red-50 text-red-600 font-semibold transition-all duration-500 hover:shadow-lg hover:-translate-y-0.5 lg:cursor-pointer"
+                onClick={() =>
+                  Swal.fire({
+                    title: "Emergency!",
+                    text: "Please Call:-6375026964",
+                    icon: "Emergency",
+                    confirmButtonText: "OK",
+                  })
+                }
+              >
                 <div className="absolute inset-0 bg-red-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
 
                 <span className="relative flex items-center gap-2 group-hover:text-white transition-colors duration-500">
@@ -127,14 +138,16 @@ export default function HospitalNavbar() {
               </button>
 
               {/* CTA */}
-              <button className="group relative overflow-hidden px-6 py-3 rounded-xl bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-500 text-white font-semibold shadow-[0_10px_25px_rgba(15,118,110,0.35)] hover:shadow-[0_14px_40px_rgba(15,118,110,0.45)] transition-all duration-500 hover:-translate-y-1 lg:cursor-pointer">
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+              <Link to="/Appointments">
+                <button className="group relative overflow-hidden px-6 py-3 rounded-xl bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-500 text-white font-semibold shadow-[0_10px_25px_rgba(15,118,110,0.35)] hover:shadow-[0_14px_40px_rgba(15,118,110,0.45)] transition-all duration-500 hover:-translate-y-1 lg:cursor-pointer">
+                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition duration-500"></div>
 
-                <span className="relative flex items-center gap-2">
-                  Book Appointment
-                  <ChevronRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </button>
+                  <span className="relative flex items-center gap-2">
+                    Book Appointment
+                    <ChevronRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </button>
+              </Link>
             </div>
 
             {/* MOBILE BUTTON */}
